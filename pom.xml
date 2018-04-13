@@ -56,7 +56,7 @@
             <plugin>
                 <groupId>se.eris</groupId>
                 <artifactId>notnull-instrumenter-maven-plugin</artifactId>
-                <version>0.6.6</version>
+                <version>0.6.7</version>
                 <executions>
                     <execution>
                         <goals>
