@@ -1,4 +1,4 @@
-package com.github.jezorko.kofun;
+package ko;
 
 /**
  * Equivalent of {@link java.util.function.Predicate} with additional methods.

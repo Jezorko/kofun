@@ -1,4 +1,4 @@
-package com.github.jezorko.kofun;
+package ko;
 
 public class ExampleObject {
 

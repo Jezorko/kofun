@@ -10,7 +10,7 @@
 
     <groupId>com.github.jezorko</groupId>
     <artifactId>kofun</artifactId>
-    <version>1-EARLY-SNAPSHOT</version>
+    <version>2-EARLY-SNAPSHOT</version>
     <description>Java library with an aim to solve the functional programming problems</description>
 
     <dependencies>

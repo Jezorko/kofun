@@ -1,4 +1,4 @@
-package com.github.jezorko.kofun;
+package ko;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,8 +6,8 @@ import javax.naming.OperationNotSupportedException;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static com.github.jezorko.kofun.Predicate.alwaysFalse;
-import static com.github.jezorko.kofun.Predicate.alwaysTrue;
+import static ko.Predicate.alwaysFalse;
+import static ko.Predicate.alwaysTrue;
 
 /**
  * A collection of helpful static methods relevant to {@link Predicate}.
