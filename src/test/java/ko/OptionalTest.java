@@ -520,6 +520,15 @@ public class OptionalTest {
         optional.orThrow(RuntimeException::new);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void orThrow_shouldThrowIfExceptionIsNull() {
+        // given:
+        Optional<?> optional = Optional.empty();
+
+        // expect:
+        optional.orThrow(() -> (RuntimeException)null);
+    }
+
     @Test
     public void orThrow_shouldNotThrowIfValueIsPresent() {
         // given:
@@ -618,7 +627,7 @@ public class OptionalTest {
         Optional<?> optional = Optional.empty();
 
         // expect:
-        assertSame(optional, optional.orElseThrow(RuntimeException::new));
+        optional.orElseThrow(RuntimeException::new);
     }
 
     @Test
@@ -629,6 +638,15 @@ public class OptionalTest {
 
         // expect:
         assertSame(anyValue, optional.orElseThrow(RuntimeException::new));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void orElseThrow_shouldThrowIfExceptionIsNull() {
+        // given:
+        Optional<?> optional = Optional.empty();
+
+        // expect:
+        optional.orElseThrow(() -> (RuntimeException) null);
     }
 
     @Test
