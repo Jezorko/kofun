@@ -38,13 +38,14 @@ public final class Predicates {
      * If the array of predicates is empty, a predicate that is always true is returned.
      * The resulting predicate is short-circuiting and therefore will not perform tests if they are not necessary.
      *
-     * @param predicates array of predicates to be chained with AND
-     * @param <T>        type of value tested
+     * @param predicates      array of predicates to be chained with AND
+     * @param <T>             type of value tested
+     * @param <PredicateType> type of predicates to be combined
      *
      * @return a new predicate
      */
     @SafeVarargs
-    public static <T> Predicate<T> and(@NotNull java.util.function.Predicate<T>... predicates) {
+    public static <T, PredicateType extends java.util.function.Predicate<? extends T>> Predicate<T> and(@NotNull PredicateType... predicates) {
         if (predicates.length == 0) {
             return alwaysTrue();
         }
@@ -64,13 +65,14 @@ public final class Predicates {
      * If the array of predicates is empty, a predicate that is always true is returned.
      * The resulting predicate is short-circuiting and therefore will not perform tests if they are not necessary.
      *
-     * @param predicates array of predicates to be chained with OR
-     * @param <T>        type of value tested
+     * @param predicates      array of predicates to be chained with OR
+     * @param <T>             type of value tested
+     * @param <PredicateType> type of predicates to be combined
      *
      * @return a new predicate
      */
     @SafeVarargs
-    public static <T> Predicate<T> or(@NotNull java.util.function.Predicate<T>... predicates) {
+    public static <T, PredicateType extends java.util.function.Predicate<? extends T>> Predicate<T> or(@NotNull PredicateType... predicates) {
         if (predicates.length == 0) {
             return alwaysTrue();
         }
