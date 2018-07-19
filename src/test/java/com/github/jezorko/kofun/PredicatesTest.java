@@ -6,8 +6,8 @@ import org.junit.Test;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import static com.github.jezorko.kofun.AdvancedPredicate.alwaysFalse;
-import static com.github.jezorko.kofun.AdvancedPredicate.alwaysTrue;
+import static com.github.jezorko.kofun.Predicate.alwaysFalse;
+import static com.github.jezorko.kofun.Predicate.alwaysTrue;
 import static com.github.jezorko.kofun.AssertionUtils.*;
 import static com.github.jezorko.kofun.Predicates.*;
 import static java.util.Arrays.asList;

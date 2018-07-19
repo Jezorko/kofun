@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import java.util.Objects;
 
-import static com.github.jezorko.kofun.AdvancedPredicate.from;
+import static com.github.jezorko.kofun.Predicate.from;
 import static com.github.jezorko.kofun.AssertionUtils.assertMatchesTruthTable;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class AdvancedPredicateTest {
+public class PredicateTest {
 
     @Test
     public void from_shouldMapPredicateToAdvancedPredicateEquivalent() {
@@ -26,7 +26,7 @@ public class AdvancedPredicateTest {
                                               .withRow(0, 1, 1)
                                               .withRow(1, 0, 1)
                                               .withRow(1, 1, 0),
-                                AdvancedPredicate::xor);
+                                Predicate::xor);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class AdvancedPredicateTest {
                                               .withRow(0, 1, 1)
                                               .withRow(1, 0, 1)
                                               .withRow(1, 1, 0),
-                                AdvancedPredicate::nand);
+                                Predicate::nand);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class AdvancedPredicateTest {
                                               .withRow(0, 1, 0)
                                               .withRow(1, 0, 0)
                                               .withRow(1, 1, 0),
-                                AdvancedPredicate::nor);
+                                Predicate::nor);
     }
 
 }

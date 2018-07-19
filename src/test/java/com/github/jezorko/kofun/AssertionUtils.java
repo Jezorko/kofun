@@ -27,7 +27,7 @@ final class AssertionUtils {
     }
 
     static <T> void assertMatchesTruthTable(Function<TruthTable, TruthTable> truthTableBuilder,
-                                            BiFunction<AdvancedPredicate<T>, AdvancedPredicate<? super T>, AdvancedPredicate<? extends T>> functionToTest) {
+                                            BiFunction<Predicate<T>, Predicate<? super T>, Predicate<? extends T>> functionToTest) {
         truthTableBuilder.apply(new TruthTable())
                          .rows()
                          .forEach(row -> {

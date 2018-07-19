@@ -5,11 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.naming.OperationNotSupportedException;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
-import static com.github.jezorko.kofun.AdvancedPredicate.alwaysFalse;
-import static com.github.jezorko.kofun.AdvancedPredicate.alwaysTrue;
+import static com.github.jezorko.kofun.Predicate.alwaysFalse;
+import static com.github.jezorko.kofun.Predicate.alwaysTrue;
 
+/**
+ * A collection of helpful static methods relevant to {@link Predicate}.
+ */
 public final class Predicates {
 
     private Predicates() throws OperationNotSupportedException {
@@ -17,14 +19,14 @@ public final class Predicates {
     }
 
     /**
-     * Negates given predicate using {@link Predicate#negate()} method.
+     * Negates given predicate using {@link java.util.function.Predicate#negate()} method.
      *
      * @param predicate to be negated
      * @param <T>       type tested by the predicate
      *
      * @return negated predicate
      */
-    public static <T> AdvancedPredicate<T> not(@NotNull Predicate<? super T> predicate) {
+    public static <T> Predicate<T> not(@NotNull java.util.function.Predicate<T> predicate) {
         return value -> predicate.negate()
                                  .test(value);
     }
@@ -40,12 +42,12 @@ public final class Predicates {
      * @return a new predicate
      */
     @SafeVarargs
-    public static <T> AdvancedPredicate<T> and(@NotNull Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> and(@NotNull java.util.function.Predicate<T>... predicates) {
         if (predicates.length == 0) {
             return alwaysTrue();
         }
         return value -> {
-            for (Predicate predicate : predicates) {
+            for (java.util.function.Predicate predicate : predicates) {
                 @SuppressWarnings("unchecked") final boolean testResult = testAgainstPredicate(value, predicate);
                 if (!testResult) {
                     return false;
@@ -66,12 +68,12 @@ public final class Predicates {
      * @return a new predicate
      */
     @SafeVarargs
-    public static <T> AdvancedPredicate<T> or(@NotNull Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> or(@NotNull java.util.function.Predicate<T>... predicates) {
         if (predicates.length == 0) {
             return alwaysTrue();
         }
         return value -> {
-            for (Predicate predicate : predicates) {
+            for (java.util.function.Predicate predicate : predicates) {
                 @SuppressWarnings("unchecked") final boolean testResult = testAgainstPredicate(value, predicate);
                 if (testResult) {
                     return true;
@@ -90,7 +92,7 @@ public final class Predicates {
      *
      * @return a new predicate that tests each element
      */
-    public static <T> AdvancedPredicate<Iterable<? extends T>> eachElement(@NotNull Predicate<? super T> predicate) {
+    public static <T> Predicate<Iterable<? extends T>> eachElement(@NotNull java.util.function.Predicate<T> predicate) {
         return values -> {
             if (values == null) {
                 return true;
@@ -113,7 +115,7 @@ public final class Predicates {
      *
      * @return a new predicate that tests each element
      */
-    public static <T> AdvancedPredicate<Iterable<T>> neitherElement(@NotNull Predicate<? super T> predicate) {
+    public static <T> Predicate<Iterable<T>> neitherElement(@NotNull java.util.function.Predicate<T> predicate) {
         return ts -> {
             if (ts == null) {
                 return false;
@@ -138,7 +140,8 @@ public final class Predicates {
      *
      * @return a predicate to test against given values
      */
-    public static <T> AdvancedPredicate<T> isIn(@NotNull T... testedValues) {
+    @SafeVarargs
+    public static <T> Predicate<T> isIn(@NotNull T... testedValues) {
         if (testedValues.length == 0) {
             return alwaysFalse();
         }
@@ -163,7 +166,8 @@ public final class Predicates {
      *
      * @return a predicate to test against given values
      */
-    public static <T> AdvancedPredicate<T> isNotIn(@NotNull T... testedValues) {
+    @SafeVarargs
+    public static <T> Predicate<T> isNotIn(@NotNull T... testedValues) {
         if (testedValues.length == 0) {
             return alwaysTrue();
         }
@@ -187,12 +191,12 @@ public final class Predicates {
      *
      * @return a composed predicate that can be applied to the outer object
      */
-    public static <T, FieldOfT> AdvancedPredicate<T> compose(@NotNull Function<? super T, ? extends FieldOfT> fieldGetter,
-                                                             @NotNull Predicate<? super FieldOfT> fieldPredicate) {
+    public static <T, FieldOfT> Predicate<T> compose(@NotNull Function<? super T, ? extends FieldOfT> fieldGetter,
+                                                     @NotNull java.util.function.Predicate<? super FieldOfT> fieldPredicate) {
         return t -> fieldPredicate.test(fieldGetter.apply(t));
     }
 
-    private static <T> boolean testAgainstPredicate(T valueToTest, @NotNull Predicate<T> predicate) {
+    private static <T> boolean testAgainstPredicate(T valueToTest, @NotNull java.util.function.Predicate<T> predicate) {
         return predicate.test(valueToTest);
     }
 

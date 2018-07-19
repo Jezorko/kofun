@@ -1,11 +1,15 @@
 package com.github.jezorko.kofun;
 
-import java.util.function.Predicate;
+/**
+ * Equivalent of {@link java.util.function.Predicate} with additional methods.
+ *
+ * @param <T> the type of input for predicate
+ */
+@FunctionalInterface
+public interface Predicate<T> extends java.util.function.Predicate<T> {
 
-public interface AdvancedPredicate<T> extends Predicate<T> {
-
-    AdvancedPredicate ALWAYS_TRUE = anyValue -> true;
-    AdvancedPredicate ALWAYS_FALSE = anyValue -> false;
+    Predicate ALWAYS_TRUE = anyValue -> true;
+    Predicate ALWAYS_FALSE = anyValue -> false;
 
     /**
      * Returns a predicate for which any value is a match.
@@ -15,7 +19,7 @@ public interface AdvancedPredicate<T> extends Predicate<T> {
      * @return {@link #ALWAYS_TRUE}
      */
     @SuppressWarnings("unchecked")
-    static <T> AdvancedPredicate<T> alwaysTrue() {
+    static <T> Predicate<T> alwaysTrue() {
         return ALWAYS_TRUE;
     }
 
@@ -27,19 +31,19 @@ public interface AdvancedPredicate<T> extends Predicate<T> {
      * @return {@link #ALWAYS_FALSE}
      */
     @SuppressWarnings("unchecked")
-    static <T> AdvancedPredicate<T> alwaysFalse() {
+    static <T> Predicate<T> alwaysFalse() {
         return ALWAYS_FALSE;
     }
 
     /**
-     * Enhances given predicate with methods of {@link AdvancedPredicate}.
+     * Enhances given predicate with methods of {@link Predicate}.
      *
      * @param predicate to be enhanced
      * @param <T>       type of value tested by the predicate
      *
-     * @return a new {@link AdvancedPredicate}
+     * @return a new {@link Predicate}
      */
-    static <T> AdvancedPredicate<T> from(Predicate<? super T> predicate) {
+    static <T> Predicate<T> from(java.util.function.Predicate<T> predicate) {
         return predicate::test;
     }
 
@@ -48,9 +52,9 @@ public interface AdvancedPredicate<T> extends Predicate<T> {
      *
      * @param other predicate to be combined with
      *
-     * @return a new {@link AdvancedPredicate}
+     * @return a new {@link Predicate}
      */
-    default AdvancedPredicate<? extends T> xor(Predicate<? super T> other) {
+    default Predicate<? extends T> xor(java.util.function.Predicate<T> other) {
         return t -> this.test(t) ^ other.test(t);
     }
 
@@ -59,9 +63,9 @@ public interface AdvancedPredicate<T> extends Predicate<T> {
      *
      * @param other predicate to be combined with
      *
-     * @return a new {@link AdvancedPredicate}
+     * @return a new {@link Predicate}
      */
-    default AdvancedPredicate<? extends T> nand(Predicate<? super T> other) {
+    default Predicate<? extends T> nand(java.util.function.Predicate<T> other) {
         return t -> this.negate()
                         .test(t) || other.negate()
                                          .test(t);
@@ -72,9 +76,9 @@ public interface AdvancedPredicate<T> extends Predicate<T> {
      *
      * @param other predicate to be combined with
      *
-     * @return a new {@link AdvancedPredicate}
+     * @return a new {@link Predicate}
      */
-    default AdvancedPredicate<? extends T> nor(Predicate<? super T> other) {
+    default Predicate<? extends T> nor(java.util.function.Predicate<T> other) {
         return t -> !(this.test(t) || other.test(t));
     }
 
