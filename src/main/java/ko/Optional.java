@@ -6,10 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public interface Optional<Value> extends Iterable<Value> {
 
@@ -34,13 +32,17 @@ public interface Optional<Value> extends Iterable<Value> {
                                            .orElseGet(Optional::empty);
     }
 
+    @NotNull
     Value get();
 
     boolean isPresent();
 
     @NotNull
-    <AnyValue, NewOptionalType extends Optional<AnyValue>> NewOptionalType createFrom(AnyValue anyValue);
+    default <AnyValue, NewOptionalType extends Optional<AnyValue>> NewOptionalType createFrom(AnyValue anyValue) {
+        return optional(anyValue);
+    }
 
+    @NotNull
     @SuppressWarnings("unchecked")
     default <OptionalType extends Optional<Value>> OptionalType retype() {
         return (OptionalType) this;
@@ -83,6 +85,7 @@ public interface Optional<Value> extends Iterable<Value> {
         }
     }
 
+    @NotNull
     default <OptionalType extends Optional<Value>> OptionalType filter(@NotNull Predicate<Value> predicate) {
         if (isPresent() && predicate.test(get())) {
             return retype();
@@ -92,15 +95,65 @@ public interface Optional<Value> extends Iterable<Value> {
         }
     }
 
+    @NotNull
     default <NewValue, NewOptionalType extends Optional<NewValue>> NewOptionalType map(@NotNull Function<? super Value, ? extends NewValue> mappingFunction) {
         return isPresent() ? createFrom(mappingFunction.apply(get())) : empty();
     }
 
+    @NotNull
     default <NewValue, NewOptionalType extends Optional<NewValue>> NewOptionalType flatMap(@NotNull Function<? super Value, NewOptionalType> mappingFunction) {
         if (isPresent()) {
             final NewOptionalType newOptional = mappingFunction.apply(get());
             Objects.requireNonNull(newOptional, "Optional flat mapping resulted in a null object");
             return newOptional;
+        }
+        else {
+            return empty();
+        }
+    }
+
+    @NotNull
+    default <OtherValue, NewValue, NewOptionalType extends Optional<NewValue>>
+    NewOptionalType mergeWith(@NotNull Optional<OtherValue> other,
+                              @NotNull BiFunction<? super Value, ? super OtherValue, ? extends NewValue> mergeFunction) {
+        if (isPresent() && other.isPresent()) {
+            return createFrom(mergeFunction.apply(get(), other.get()));
+        }
+        else {
+            return empty();
+        }
+    }
+
+    @NotNull
+    default <OtherValue, NewValue, NewOptionalType extends Optional<NewValue>>
+    NewOptionalType mergeWith(@NotNull Optional<OtherValue> other,
+                              @NotNull Function<? super Value, ? extends NewValue> mergeFallback,
+                              @NotNull BiFunction<? super Value, ? super OtherValue, ? extends NewValue> mergeFunction) {
+        if (isPresent() && other.isPresent()) {
+            return createFrom(mergeFunction.apply(get(), other.get()));
+        }
+        else if (isPresent()) {
+            return createFrom(mergeFallback.apply(get()));
+        }
+        else {
+            return empty();
+        }
+    }
+
+    @NotNull
+    default <OtherValue, NewValue, NewOptionalType extends Optional<NewValue>>
+    NewOptionalType mergeWith(@NotNull Optional<OtherValue> other,
+                              @NotNull Function<? super Value, ? extends NewValue> thisMergeFallback,
+                              @NotNull Function<? super OtherValue, ? extends NewValue> otherMergeFallback,
+                              @NotNull BiFunction<? super Value, ? super OtherValue, ? extends NewValue> mergeFunction) {
+        if (isPresent() && other.isPresent()) {
+            return createFrom(mergeFunction.apply(get(), other.get()));
+        }
+        else if (isPresent()) {
+            return createFrom(thisMergeFallback.apply(get()));
+        }
+        else if (other.isPresent()) {
+            return createFrom(otherMergeFallback.apply(other.get()));
         }
         else {
             return empty();

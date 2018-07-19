@@ -29,6 +29,7 @@ public class EmptyOptionalTest {
         // given:
         Optional<Object> emptyOptional = new EmptyOptional();
         Optional<Object> otherEmptyOptional = new Optional<Object>() {
+            @NotNull
             @Override
             public Object get() {
                 return null;

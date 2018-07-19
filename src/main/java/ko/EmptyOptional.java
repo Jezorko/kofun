@@ -6,10 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import static ko.Optional.optional;
-
 final class EmptyOptional<Value> implements Optional<Value> {
 
+    @NotNull
     @Override
     public Value get() {
         throw new NoSuchElementException("No value present");
@@ -18,12 +17,6 @@ final class EmptyOptional<Value> implements Optional<Value> {
     @Override
     public boolean isPresent() {
         return false;
-    }
-
-    @NotNull
-    @Override
-    public <AnyValue, NewOptionalType extends Optional<AnyValue>> NewOptionalType createFrom(AnyValue anyValue) {
-        return optional(anyValue);
     }
 
     @Override

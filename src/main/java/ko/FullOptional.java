@@ -14,6 +14,7 @@ final class FullOptional<Value> implements Optional<Value> {
         this.value = value;
     }
 
+    @NotNull
     @Override
     public Value get() {
         return value;
@@ -22,12 +23,6 @@ final class FullOptional<Value> implements Optional<Value> {
     @Override
     public boolean isPresent() {
         return true;
-    }
-
-    @NotNull
-    @Override
-    public <AnyValue, NewOptionalType extends Optional<AnyValue>> NewOptionalType createFrom(AnyValue anyValue) {
-        return Optional.optional(anyValue);
     }
 
     @Override

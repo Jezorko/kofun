@@ -247,6 +247,211 @@ public class OptionalTest {
     }
 
     @Test
+    public void mergeWith_shouldNotMergeIfBothValuesAreAbsentAndNoFallbackIsProvided() {
+        // given:
+        Optional<?> firstOptional = Optional.empty();
+        Optional<?> secondOptional = Optional.empty();
+
+        // when:
+        Optional<Object> firstMergeResult = firstOptional.mergeWith(secondOptional,
+                                                                    (o1, o2) -> {
+                                                                        Assert.fail();
+                                                                        return null;
+                                                                    });
+
+        Optional<Object> secondMergeResult = secondOptional.mergeWith(firstOptional,
+                                                                      (o1, o2) -> {
+                                                                          Assert.fail();
+                                                                          return null;
+                                                                      });
+
+        // then:
+        assertFalse(firstMergeResult.isPresent());
+        assertFalse(secondMergeResult.isPresent());
+    }
+
+    @Test
+    public void mergeWith_shouldNotMergeIfFirstValueIsAbsentAndNoFallbackIsProvided() {
+        // given:
+        Optional<?> firstOptional = Optional.empty();
+        Object anyValue = new Object();
+        Optional<?> secondOptional = Optional.optional(anyValue);
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               (o1, o2) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
+    }
+
+    @Test
+    public void mergeWith_shouldMergeIfOtherValueIsAbsentButFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> firstOptional = Optional.optional(anyValue);
+        Optional<?> secondOptional = Optional.empty();
+
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               first -> expectedResult,
+                                                               (o1, o2) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
+    }
+
+    @Test
+    public void mergeWith_shouldMergeIfOtherValueIsAbsentButBothFallbacksAreProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> firstOptional = Optional.optional(anyValue);
+        Optional<?> secondOptional = Optional.empty();
+
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               first -> expectedResult,
+                                                               second -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               },
+                                                               (o1, o2) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
+    }
+
+    @Test
+    public void mergeWith_shouldMergeIfFirstValueIsAbsentButBothFallbacksAreProvided() {
+        // given:
+        Optional<?> firstOptional = Optional.empty();
+        Object anyValue = new Object();
+        Optional<?> secondOptional = Optional.optional(anyValue);
+
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               first -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               },
+                                                               second -> expectedResult,
+                                                               (o1, o2) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
+    }
+
+    @Test
+    public void mergeWith_shouldMergeIfOtherValueIsPresentAndFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> firstOptional = Optional.optional(anyValue);
+        Object anyOtherValue = new Object();
+        Optional<?> secondOptional = Optional.optional(anyOtherValue);
+
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               first -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               },
+                                                               (first, second) -> expectedResult);
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
+    }
+
+    @Test
+    public void mergeWith_shouldNotMergeIfSecondValueIsAbsentAndNoFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> firstOptional = Optional.optional(anyValue);
+        Optional<?> secondOptional = Optional.empty();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               (o1, o2) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
+    }
+
+    @Test
+    public void mergeWith_shouldMergeUsingProvidedFunctionIfBothValuesArePresent() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> firstOptional = Optional.optional(anyValue);
+        Object anyOtherValue = new Object();
+        Optional<?> secondOptional = Optional.optional(anyOtherValue);
+
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               (first, second) -> {
+                                                                   assertSame(anyValue, first);
+                                                                   assertSame(anyOtherValue, second);
+                                                                   return expectedResult;
+                                                               });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
+    }
+
+    @Test
+    public void mergeWith_shouldNotMergeIfBothFallbacksAreProvidedButBothValuesAreAbsent() {
+        // given:
+        Optional<?> firstOptional = Optional.empty();
+        Optional<?> secondOptional = Optional.empty();
+
+        // when:
+        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
+                                                               first -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               },
+                                                               second -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               },
+                                                               (first, second) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
+    }
+
+    @Test
     public void or_shouldAddValueIfWasAbsent() {
         //given:
         Optional<Object> optional = Optional.empty(); // TODO: for some reason doesn't work with wildcard (?)
@@ -423,7 +628,7 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // expect:
-        assertSame(optional, optional.orElseThrow(RuntimeException::new));
+        assertSame(anyValue, optional.orElseThrow(RuntimeException::new));
     }
 
     @Test
