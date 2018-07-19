@@ -26,9 +26,11 @@ public final class Predicates {
      *
      * @return negated predicate
      */
+    @NotNull
     public static <T> Predicate<T> not(@NotNull java.util.function.Predicate<T> predicate) {
-        return value -> predicate.negate()
-                                 .test(value);
+        final java.util.function.Predicate<T> negatedPredicate = predicate.negate();
+        Objects.requireNonNull(negatedPredicate, "Predicate negation resulted in a null object");
+        return negatedPredicate::test;
     }
 
     /**

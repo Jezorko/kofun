@@ -6,9 +6,9 @@ import org.junit.Test;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static com.github.jezorko.kofun.AssertionUtils.*;
 import static com.github.jezorko.kofun.Predicate.alwaysFalse;
 import static com.github.jezorko.kofun.Predicate.alwaysTrue;
-import static com.github.jezorko.kofun.AssertionUtils.*;
 import static com.github.jezorko.kofun.Predicates.*;
 import static java.util.Arrays.asList;
 import static java.util.Optional.of;
@@ -40,6 +40,21 @@ public class PredicatesTest {
     @Test(expected = IllegalArgumentException.class)
     public void not_shouldThrowWhenPredicateIsNull() {
         not(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void not_shouldThrowWhenPredicateNegationIsNull() {
+        not(new Predicate<Object>() {
+            @Override
+            public boolean test(Object o) {
+                return false;
+            }
+
+            @Override
+            public Predicate<Object> negate() {
+                return null;
+            }
+        });
     }
 
     @Test
