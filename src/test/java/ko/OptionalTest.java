@@ -67,9 +67,9 @@ public class OptionalTest {
         Optional<?> optional = Optional.empty();
 
         // when:
-        optional.onPresent(v -> fail());
+        assertSame(optional, optional.onPresent(v -> fail()));
         optional.ifPresent(v -> fail());
-        optional.onEmpty(() -> executedOnEmpty.set(true));
+        assertSame(optional, optional.onEmpty(() -> executedOnEmpty.set(true)));
         optional.ifEmpty(() -> executedIfEmpty.set(true));
 
         // then:
@@ -88,12 +88,12 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // when:
-        optional.onEmpty(Assert::fail);
-        optional.onEmpty(Assert::fail);
-        optional.onPresent(v -> {
+        assertSame(optional, optional.onEmpty(Assert::fail));
+        optional.ifEmpty(Assert::fail);
+        assertSame(optional, optional.onPresent(v -> {
             assertSame(anyValue, v);
             executedOnPresent.set(true);
-        });
+        }));
         optional.ifPresent(v -> {
             assertSame(anyValue, v);
             executedIfPresent.set(true);
@@ -413,7 +413,7 @@ public class OptionalTest {
         Optional<?> optional = Optional.empty();
 
         // expect:
-        optional.orElseThrow(RuntimeException::new);
+        assertSame(optional, optional.orElseThrow(RuntimeException::new));
     }
 
     @Test
@@ -423,7 +423,7 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // expect:
-        optional.orElseThrow(RuntimeException::new);
+        assertSame(optional, optional.orElseThrow(RuntimeException::new));
     }
 
     @Test
