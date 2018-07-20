@@ -9,7 +9,8 @@ import java.util.function.Predicate;
 import static java.util.Arrays.asList;
 import static java.util.Optional.of;
 import static java.util.function.Function.identity;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class PredicatesTest {
 
@@ -66,17 +67,23 @@ public class PredicatesTest {
 
         // expect:
         Assert.assertEquals(p1.test(value),
-                            Predicates.and(p1).test(5));
+                            Predicates.and(p1)
+                                      .test(5));
         Assert.assertEquals(p1.test(value) && p2.test(value) && p3.test(value),
-                            Predicates.and(p1, p2, p3).test(5));
+                            Predicates.and(p1, p2, p3)
+                                      .test(5));
         Assert.assertEquals(p1.test(value) && p2.test(value) && p3.test(value) && p4.test(value),
-                            Predicates.and(p1, p2, p3, p4).test(5));
+                            Predicates.and(p1, p2, p3, p4)
+                                      .test(5));
         Assert.assertEquals(p1.test(value) && p2.test(value) && p3.test(value) && p5.test(value),
-                            Predicates.and(p1, p2, p3, p5).test(5));
+                            Predicates.and(p1, p2, p3, p5)
+                                      .test(5));
         Assert.assertEquals(p4.test(value),
-                            Predicates.and(p4).test(5));
+                            Predicates.and(p4)
+                                      .test(5));
         Assert.assertEquals(p5.test(value),
-                            Predicates.and(p5).test(5));
+                            Predicates.and(p5)
+                                      .test(5));
     }
 
     @Test
@@ -85,7 +92,8 @@ public class PredicatesTest {
         Predicate<Integer> throwingPredicate = p -> {throw new AssertionError("should not be executed");};
 
         // expect:
-        Predicates.and(ko.Predicate.alwaysFalse(), throwingPredicate).test(null);
+        Predicates.and(ko.Predicate.alwaysFalse(), throwingPredicate)
+                  .test(null);
     }
 
     @Test
@@ -101,7 +109,8 @@ public class PredicatesTest {
     @Test
     public void and_shouldAlwaysReturnTrueWhenNoPredicatesAreProvided() {
         // expect:
-        assertTrue(Predicates.and().test(null));
+        assertTrue(Predicates.and()
+                             .test(null));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -122,17 +131,23 @@ public class PredicatesTest {
 
         // expect:
         Assert.assertEquals(p1.test(value),
-                            Predicates.or(p1).test(5));
+                            Predicates.or(p1)
+                                      .test(5));
         Assert.assertEquals(p1.test(value) || p2.test(value) || p3.test(value),
-                            Predicates.or(p1, p2, p3).test(5));
+                            Predicates.or(p1, p2, p3)
+                                      .test(5));
         Assert.assertEquals(p1.test(value) || p2.test(value) || p3.test(value) || p4.test(value),
-                            Predicates.or(p1, p2, p3, p4).test(5));
+                            Predicates.or(p1, p2, p3, p4)
+                                      .test(5));
         Assert.assertEquals(p1.test(value) || p2.test(value) || p3.test(value) || p5.test(value),
-                            Predicates.or(p1, p2, p3, p5).test(5));
+                            Predicates.or(p1, p2, p3, p5)
+                                      .test(5));
         Assert.assertEquals(p4.test(value),
-                            Predicates.or(p4).test(5));
+                            Predicates.or(p4)
+                                      .test(5));
         Assert.assertEquals(p5.test(value),
-                            Predicates.or(p5).test(5));
+                            Predicates.or(p5)
+                                      .test(5));
     }
 
     @Test
@@ -141,7 +156,8 @@ public class PredicatesTest {
         Predicate<Integer> throwingPredicate = p -> {throw new AssertionError("should not be executed");};
 
         // expect:
-        Predicates.or(ko.Predicate.alwaysTrue(), throwingPredicate).test(null);
+        Predicates.or(ko.Predicate.alwaysTrue(), throwingPredicate)
+                  .test(null);
     }
 
     @Test
@@ -157,7 +173,8 @@ public class PredicatesTest {
     @Test
     public void or_shouldAlwaysReturnTrueWhenNoPredicatesAreProvided() {
         // expect:
-        assertTrue(Predicates.or().test(null));
+        assertTrue(Predicates.or()
+                             .test(null));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -233,26 +250,36 @@ public class PredicatesTest {
     @Test
     public void isIn_shouldReturnFalseIfNoElementsAreProvided() {
         // expect:
-        assertFalse(Predicates.isIn().test(new Object()));
+        assertFalse(Predicates.isIn()
+                              .test(new Object()));
     }
 
     @Test
     public void isIn_shouldReturnTrueIfElementHasOneOfTheValues() {
         // expect:
-        assertTrue(Predicates.isIn(1, 2, 3).test(1));
-        assertTrue(Predicates.isIn(1, 2, 3).test(2));
-        assertTrue(Predicates.isIn(1, 2, 3).test(3));
-        assertTrue(Predicates.isIn(null, 2, 3).test(null));
-        assertTrue(Predicates.isIn(1, null, 3).test(null));
-        assertTrue(Predicates.isIn(1, 2, null).test(null));
+        assertTrue(Predicates.isIn(1, 2, 3)
+                             .test(1));
+        assertTrue(Predicates.isIn(1, 2, 3)
+                             .test(2));
+        assertTrue(Predicates.isIn(1, 2, 3)
+                             .test(3));
+        assertTrue(Predicates.isIn(null, 2, 3)
+                             .test(null));
+        assertTrue(Predicates.isIn(1, null, 3)
+                             .test(null));
+        assertTrue(Predicates.isIn(1, 2, null)
+                             .test(null));
     }
 
     @Test
     public void isIn_shouldReturnFalseIfElementHasNeitherOfTheValues() {
         // expect:
-        assertFalse(Predicates.isIn(1, 2, 3).test(null));
-        assertFalse(Predicates.isIn(1, 2, 3).test(4));
-        assertFalse(Predicates.isIn(null, null, null).test(2));
+        assertFalse(Predicates.isIn(1, 2, 3)
+                              .test(null));
+        assertFalse(Predicates.isIn(1, 2, 3)
+                              .test(4));
+        assertFalse(Predicates.isIn(null, null, null)
+                              .test(2));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -263,26 +290,36 @@ public class PredicatesTest {
     @Test
     public void isNotIn_shouldReturnTrueIfNoElementsAreProvided() {
         // expect:
-        assertTrue(Predicates.isNotIn().test(new Object()));
+        assertTrue(Predicates.isNotIn()
+                             .test(new Object()));
     }
 
     @Test
     public void isNotIn_shouldReturnFalseIfElementHasOneOfTheValues() {
         // expect:
-        assertTrue(Predicates.isNotIn(1, 2, 3).test(null));
-        assertTrue(Predicates.isNotIn(1, 2, 3).test(4));
-        assertTrue(Predicates.isNotIn(null, null, null).test(2));
+        assertTrue(Predicates.isNotIn(1, 2, 3)
+                             .test(null));
+        assertTrue(Predicates.isNotIn(1, 2, 3)
+                             .test(4));
+        assertTrue(Predicates.isNotIn(null, null, null)
+                             .test(2));
     }
 
     @Test
     public void isNotIn_shouldReturnTrueIfElementHasNeitherOfTheValues() {
         // expect:
-        assertFalse(Predicates.isNotIn(1, 2, 3).test(1));
-        assertFalse(Predicates.isNotIn(1, 2, 3).test(2));
-        assertFalse(Predicates.isNotIn(1, 2, 3).test(3));
-        assertFalse(Predicates.isNotIn(null, 2, 3).test(null));
-        assertFalse(Predicates.isNotIn(1, null, 3).test(null));
-        assertFalse(Predicates.isNotIn(1, 2, null).test(null));
+        assertFalse(Predicates.isNotIn(1, 2, 3)
+                              .test(1));
+        assertFalse(Predicates.isNotIn(1, 2, 3)
+                              .test(2));
+        assertFalse(Predicates.isNotIn(1, 2, 3)
+                              .test(3));
+        assertFalse(Predicates.isNotIn(null, 2, 3)
+                              .test(null));
+        assertFalse(Predicates.isNotIn(1, null, 3)
+                              .test(null));
+        assertFalse(Predicates.isNotIn(1, 2, null)
+                              .test(null));
     }
 
     @Test(expected = IllegalArgumentException.class)

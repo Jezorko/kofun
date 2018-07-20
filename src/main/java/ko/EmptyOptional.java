@@ -29,7 +29,7 @@ final class EmptyOptional<Value> implements Optional<Value> {
             return false;
         }
         else {
-            return Optional.equals(this, (Optional) other);
+            return Optionals.equals(this, (Optional) other);
         }
     }
 

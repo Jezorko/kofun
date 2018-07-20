@@ -1,8 +1,8 @@
 package ko;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -12,10 +12,14 @@ import static ko.Predicate.alwaysTrue;
 /**
  * A collection of helpful static methods relevant to {@link Predicate}.
  */
-public final class Predicates {
+public final class Predicates extends StaticMethodsCollection {
 
-    private Predicates() throws OperationNotSupportedException {
-        throw new OperationNotSupportedException("Class " + Predicates.class.toString() + " is not meant to be instantiated");
+    /**
+     * @throws InstantiationOfStaticMethodsCollectionException on each call
+     */
+    @Contract(value = "-> fail", pure = true)
+    private Predicates() throws InstantiationOfStaticMethodsCollectionException {
+        super();
     }
 
     /**

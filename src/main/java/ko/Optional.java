@@ -9,7 +9,12 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.function.Predicate;
 
-public interface Optional<Value> extends Iterable<Value> {
+/**
+ * Equivalent of {@link java.util.Optional} in a more extensible form of an interface.
+ *
+ * @param <ValueType> the type of optional value
+ */
+public interface Optional<ValueType> extends Iterable<ValueType> {
 
     Optional<?> EMPTY = new EmptyOptional();
 
@@ -33,7 +38,7 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    Value get();
+    ValueType get();
 
     boolean isPresent();
 
@@ -44,12 +49,12 @@ public interface Optional<Value> extends Iterable<Value> {
 
     @NotNull
     @SuppressWarnings("unchecked")
-    default <OptionalType extends Optional<Value>> OptionalType retype() {
+    default <OptionalType extends Optional<ValueType>> OptionalType retype() {
         return (OptionalType) this;
     }
 
     @NotNull
-    default <OptionalType extends Optional<Value>> OptionalType onPresent(@NotNull Consumer<? super Value> optionalValueConsumer) {
+    default <OptionalType extends Optional<ValueType>> OptionalType onPresent(@NotNull Consumer<? super ValueType> optionalValueConsumer) {
         if (isPresent()) {
             optionalValueConsumer.accept(get());
         }
@@ -57,14 +62,14 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    default <OptionalType extends Optional<Value>> OptionalType onEmpty(@NotNull Runnable onEmptyAction) {
+    default <OptionalType extends Optional<ValueType>> OptionalType onEmpty(@NotNull Runnable onEmptyAction) {
         if (!isPresent()) {
             onEmptyAction.run();
         }
         return retype();
     }
 
-    default void ifPresent(@NotNull Consumer<? super Value> optionalValueConsumer) {
+    default void ifPresent(@NotNull Consumer<? super ValueType> optionalValueConsumer) {
         if (isPresent()) {
             optionalValueConsumer.accept(get());
         }
@@ -76,7 +81,7 @@ public interface Optional<Value> extends Iterable<Value> {
         }
     }
 
-    default void ifPresentOrElse(@NotNull Consumer<? super Value> optionalValueConsumer, @NotNull Runnable onEmptyAction) {
+    default void ifPresentOrElse(@NotNull Consumer<? super ValueType> optionalValueConsumer, @NotNull Runnable onEmptyAction) {
         if (isPresent()) {
             optionalValueConsumer.accept(get());
         }
@@ -86,7 +91,7 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    default <OptionalType extends Optional<Value>> OptionalType filter(@NotNull Predicate<Value> predicate) {
+    default <OptionalType extends Optional<ValueType>> OptionalType filter(@NotNull Predicate<ValueType> predicate) {
         if (isPresent() && predicate.test(get())) {
             return retype();
         }
@@ -96,12 +101,12 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    default <NewValue, NewOptionalType extends Optional<NewValue>> NewOptionalType map(@NotNull Function<? super Value, ? extends NewValue> mappingFunction) {
+    default <NewValueType, NewOptionalType extends Optional<NewValueType>> NewOptionalType map(@NotNull Function<? super ValueType, ? extends NewValueType> mappingFunction) {
         return isPresent() ? createFrom(mappingFunction.apply(get())) : empty();
     }
 
     @NotNull
-    default <NewValue, NewOptionalType extends Optional<NewValue>> NewOptionalType flatMap(@NotNull Function<? super Value, NewOptionalType> mappingFunction) {
+    default <NewValueType, NewOptionalType extends Optional<NewValueType>> NewOptionalType flatMap(@NotNull Function<? super ValueType, NewOptionalType> mappingFunction) {
         if (isPresent()) {
             final NewOptionalType newOptional = mappingFunction.apply(get());
             Objects.requireNonNull(newOptional, "Optional flat mapping resulted in a null object");
@@ -113,9 +118,9 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    default <OtherValue, NewValue, NewOptionalType extends Optional<NewValue>>
-    NewOptionalType mergeWith(@NotNull Optional<OtherValue> other,
-                              @NotNull BiFunction<? super Value, ? super OtherValue, ? extends NewValue> mergeFunction) {
+    default <OtherValueType, NewValueType, NewOptionalType extends Optional<NewValueType>>
+    NewOptionalType mergeWith(@NotNull Optional<OtherValueType> other,
+                              @NotNull BiFunction<? super ValueType, ? super OtherValueType, ? extends NewValueType> mergeFunction) {
         if (isPresent() && other.isPresent()) {
             return createFrom(mergeFunction.apply(get(), other.get()));
         }
@@ -125,10 +130,10 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    default <OtherValue, NewValue, NewOptionalType extends Optional<NewValue>>
-    NewOptionalType mergeWith(@NotNull Optional<OtherValue> other,
-                              @NotNull Function<? super Value, ? extends NewValue> mergeFallback,
-                              @NotNull BiFunction<? super Value, ? super OtherValue, ? extends NewValue> mergeFunction) {
+    default <OtherValueType, NewValueType, NewOptionalType extends Optional<NewValueType>>
+    NewOptionalType mergeWith(@NotNull Optional<OtherValueType> other,
+                              @NotNull Function<? super ValueType, ? extends NewValueType> mergeFallback,
+                              @NotNull BiFunction<? super ValueType, ? super OtherValueType, ? extends NewValueType> mergeFunction) {
         if (isPresent() && other.isPresent()) {
             return createFrom(mergeFunction.apply(get(), other.get()));
         }
@@ -141,11 +146,11 @@ public interface Optional<Value> extends Iterable<Value> {
     }
 
     @NotNull
-    default <OtherValue, NewValue, NewOptionalType extends Optional<NewValue>>
-    NewOptionalType mergeWith(@NotNull Optional<OtherValue> other,
-                              @NotNull Function<? super Value, ? extends NewValue> thisMergeFallback,
-                              @NotNull Function<? super OtherValue, ? extends NewValue> otherMergeFallback,
-                              @NotNull BiFunction<? super Value, ? super OtherValue, ? extends NewValue> mergeFunction) {
+    default <OtherValueType, NewValueType, NewOptionalType extends Optional<NewValueType>>
+    NewOptionalType mergeWith(@NotNull Optional<OtherValueType> other,
+                              @NotNull Function<? super ValueType, ? extends NewValueType> thisMergeFallback,
+                              @NotNull Function<? super OtherValueType, ? extends NewValueType> otherMergeFallback,
+                              @NotNull BiFunction<? super ValueType, ? super OtherValueType, ? extends NewValueType> mergeFunction) {
         if (isPresent() && other.isPresent()) {
             return createFrom(mergeFunction.apply(get(), other.get()));
         }
@@ -160,15 +165,15 @@ public interface Optional<Value> extends Iterable<Value> {
         }
     }
 
-    default <OptionalType extends Optional<Value>> OptionalType or(Value alternativeValue) {
+    default <OptionalType extends Optional<ValueType>> OptionalType or(ValueType alternativeValue) {
         return isPresent() ? retype() : createFrom(alternativeValue);
     }
 
-    default <OptionalType extends Optional<Value>> OptionalType orGet(@NotNull Supplier<? extends Value> alternativeValueSupplier) {
+    default <OptionalType extends Optional<ValueType>> OptionalType orGet(@NotNull Supplier<? extends ValueType> alternativeValueSupplier) {
         return isPresent() ? retype() : createFrom(alternativeValueSupplier.get());
     }
 
-    default <ExceptionType extends Throwable, OptionalType extends Optional<Value>> OptionalType orThrow(
+    default <ExceptionType extends Throwable, OptionalType extends Optional<ValueType>> OptionalType orThrow(
             @NotNull Supplier<? extends ExceptionType> exceptionSupplier) throws ExceptionType {
         if (isPresent()) {
             return retype();
@@ -180,20 +185,20 @@ public interface Optional<Value> extends Iterable<Value> {
         }
     }
 
-    default Value orElseNull() {
+    default ValueType orElseNull() {
         return orElse(null);
     }
 
     @Contract(value = "null -> null", pure = true)
-    default Value orElse(Value alternativeValue) {
+    default ValueType orElse(ValueType alternativeValue) {
         return isPresent() ? get() : alternativeValue;
     }
 
-    default Value orElseGet(@NotNull Supplier<? extends Value> alternativeValueSupplier) {
+    default ValueType orElseGet(@NotNull Supplier<? extends ValueType> alternativeValueSupplier) {
         return isPresent() ? get() : alternativeValueSupplier.get();
     }
 
-    default <ExceptionType extends Throwable> Value orElseThrow(@NotNull Supplier<? extends ExceptionType> exceptionSupplier) throws ExceptionType {
+    default <ExceptionType extends Throwable> ValueType orElseThrow(@NotNull Supplier<? extends ExceptionType> exceptionSupplier) throws ExceptionType {
         if (isPresent()) {
             return get();
         }
@@ -204,30 +209,17 @@ public interface Optional<Value> extends Iterable<Value> {
         }
     }
 
-    default java.util.Optional<Value> toJavaOptional() {
+    default java.util.Optional<ValueType> toJavaOptional() {
         return isPresent() ? java.util.Optional.of(get()) : java.util.Optional.empty();
     }
 
     @NotNull
     @Override
-    default Iterator<Value> iterator() {
+    default Iterator<ValueType> iterator() {
         return isPresent() ?
                Collections.singleton(get())
                           .iterator() :
                Collections.emptyIterator();
-    }
-
-    // TODO: move to "Optionals" static methods collection
-    static boolean equals(Optional that, Optional other) {
-        if (!that.isPresent() && !other.isPresent()) {
-            return true;
-        }
-        else if (that.isPresent() && other.isPresent()) {
-            return Objects.equals(that.get(), other.get());
-        }
-        else {
-            return false;
-        }
     }
 
 }
