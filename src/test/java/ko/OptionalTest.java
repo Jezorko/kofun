@@ -452,6 +452,46 @@ public class OptionalTest {
     }
 
     @Test
+    public void explodeAndMerge_shouldNotMergeIfOptionalIsEmpty() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldNotMergeIfExplodedComponentsAreAbsentAndNoFallbackIsProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldNotMergeIfFirstExplodedComponentIsAbsentAndNoFallbackIsProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldNotMergeIfSecondExplodedComponentIsAbsentAndNoFallbackIsProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldMergeIfBothExplodedComponentsArePresentsEvenIfNoFallbackIsProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldNotMergeIfFirstExplodedComponentIsAbsentAndOneFallbackIsProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldMergeIfFirstExplodedComponentIsPresentAndSecondExplodedComponentIsAbsentAndOneFallbackIsProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldNotMergeIfBothExplodedComponentsAreAbsentAndTwoFallbacksAreProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldMergeIfFirstExplodedComponentsIsPresentAndSecondExplodedComponentIsAbsentAndTwoFallbacksAreProvided() {
+    }
+
+    @Test
+    public void explodeAndMerge_shouldMergeIfFirstExplodedComponentsIsAbsentAndSecondExplodedComponentIsPresentAndTwoFallbacksAreProvided() {
+    }
+
+    @Test
     public void or_shouldAddValueIfWasAbsent() {
         //given:
         Optional<Object> optional = Optional.empty(); // TODO: for some reason doesn't work with wildcard (?)
@@ -526,7 +566,7 @@ public class OptionalTest {
         Optional<?> optional = Optional.empty();
 
         // expect:
-        optional.orThrow(() -> (RuntimeException)null);
+        optional.orThrow(() -> (RuntimeException) null);
     }
 
     @Test
