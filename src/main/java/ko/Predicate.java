@@ -8,7 +8,16 @@ package ko;
 @FunctionalInterface
 public interface Predicate<T> extends java.util.function.Predicate<T> {
 
+    /**
+     * Raw {@link Predicate} for which any value is a match.
+     * Do not use this object directly, instead call {@link #alwaysTrue()} for a type-casted version.
+     */
     Predicate ALWAYS_TRUE = anyValue -> true;
+
+    /**
+     * Raw {@link Predicate} for which no value is a match.
+     * Do not use this object directly, instead call {@link #alwaysFalse()} for a type-casted version.
+     */
     Predicate ALWAYS_FALSE = anyValue -> false;
 
     /**
