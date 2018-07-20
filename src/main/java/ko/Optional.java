@@ -373,6 +373,137 @@ public interface Optional<ValueType> extends Iterable<ValueType> {
     }
 
     /**
+     * Extract two components of the wrapped optional value and if both are present,
+     * merges them using the provided function.
+     *
+     * @param firstComponentExtractor  to be used for extracting the first component
+     * @param secondComponentExtractor to be used for extracting the second component
+     * @param mergeFunction            to merge the values with
+     * @param <FirstValueType>         the type of the first component
+     * @param <SecondValueType>        the type of the second component
+     * @param <NewValueType>           the type of the merge function result
+     * @param <NewOptionalType>        the type of the optional object instance
+     *
+     * @return if the wrapped {@link Optional} value is present and
+     * neither component is null, a new optional instance of the merge
+     * function result, otherwise an {@link EmptyOptional}
+     */
+    @NotNull
+    @ExtensibleFluentChain
+    default <FirstValueType, SecondValueType, NewValueType, NewOptionalType extends Optional<NewValueType>>
+    NewOptionalType explodeAndMerge(@NotNull Function<? super ValueType, ? extends FirstValueType> firstComponentExtractor,
+                                    @NotNull Function<? super ValueType, ? extends SecondValueType> secondComponentExtractor,
+                                    @NotNull BiFunction<? super FirstValueType, ? super SecondValueType, ? extends NewValueType> mergeFunction) {
+        if (isPresent()) {
+            final FirstValueType firstValue = firstComponentExtractor.apply(get());
+            final SecondValueType secondValue = secondComponentExtractor.apply(get());
+            if (firstValue != null && secondValue != null) {
+                return createFrom(mergeFunction.apply(firstValue, secondValue));
+            }
+            else {
+                return empty();
+            }
+        }
+        else {
+            return empty();
+        }
+    }
+
+    /**
+     * Extract two components of the wrapped optional value and if both are present,
+     * merges them using the provided function.
+     *
+     * @param firstComponentExtractor  to be used for extracting the first component
+     * @param secondComponentExtractor to be used for extracting the second component
+     * @param mergeFallback            to use if the second component is null
+     * @param mergeFunction            to merge the values with
+     * @param <FirstValueType>         the type of the first component
+     * @param <SecondValueType>        the type of the second component
+     * @param <NewValueType>           the type of the merge function result
+     * @param <NewOptionalType>        the type of the optional object instance
+     *
+     * @return if the wrapped {@link Optional} value is present and
+     * neither component is null, a new optional instance of the merge
+     * function result or if the second component is absent,
+     * a new optional instance of the fallback function,
+     * otherwise an {@link EmptyOptional}
+     */
+    @NotNull
+    @ExtensibleFluentChain
+    default <FirstValueType, SecondValueType, NewValueType, NewOptionalType extends Optional<NewValueType>>
+    NewOptionalType explodeAndMerge(@NotNull Function<? super ValueType, ? extends FirstValueType> firstComponentExtractor,
+                                    @NotNull Function<? super ValueType, ? extends SecondValueType> secondComponentExtractor,
+                                    @NotNull Function<? super FirstValueType, ? extends NewValueType> mergeFallback,
+                                    @NotNull BiFunction<? super FirstValueType, ? super SecondValueType, ? extends NewValueType> mergeFunction) {
+        if (isPresent()) {
+            final FirstValueType firstValue = firstComponentExtractor.apply(get());
+            final SecondValueType secondValue = secondComponentExtractor.apply(get());
+            if (firstValue != null && secondValue != null) {
+                return createFrom(mergeFunction.apply(firstValue, secondValue));
+            }
+            else if (firstValue != null) {
+                return createFrom(mergeFallback.apply(firstValue));
+            }
+            else {
+                return empty();
+            }
+        }
+        else {
+            return empty();
+        }
+    }
+
+    /**
+     * Extract two components of the wrapped optional value and if both are present,
+     * merges them using the provided function.
+     *
+     * @param firstComponentExtractor      to be used for extracting the first component
+     * @param secondComponentExtractor     to be used for extracting the second component
+     * @param firstComponentMergeFallback  to use if the second component is null
+     * @param secondComponentMergeFallback to use if the first component is null
+     * @param mergeFunction                to merge the values with
+     * @param <FirstValueType>             the type of the first component
+     * @param <SecondValueType>            the type of the second component
+     * @param <NewValueType>               the type of the merge function result
+     * @param <NewOptionalType>            the type of the optional object instance
+     *
+     * @return if the wrapped {@link Optional} value is present and
+     * neither component is null, a new optional instance of the merge
+     * function result or if the second component is absent,
+     * a new optional instance of the first fallback function or
+     * if the first component is absent, a new optional instance of
+     * the second fallback function, otherwise an {@link EmptyOptional}
+     */
+    @NotNull
+    @ExtensibleFluentChain
+    default <FirstValueType, SecondValueType, NewValueType, NewOptionalType extends Optional<NewValueType>>
+    NewOptionalType explodeAndMerge(@NotNull Function<? super ValueType, ? extends FirstValueType> firstComponentExtractor,
+                                    @NotNull Function<? super ValueType, ? extends SecondValueType> secondComponentExtractor,
+                                    @NotNull Function<? super FirstValueType, ? extends NewValueType> firstComponentMergeFallback,
+                                    @NotNull Function<? super SecondValueType, ? extends NewValueType> secondComponentMergeFallback,
+                                    @NotNull BiFunction<? super FirstValueType, ? super SecondValueType, ? extends NewValueType> mergeFunction) {
+        if (isPresent()) {
+            final FirstValueType firstValue = firstComponentExtractor.apply(get());
+            final SecondValueType secondValue = secondComponentExtractor.apply(get());
+            if (firstValue != null && secondValue != null) {
+                return createFrom(mergeFunction.apply(firstValue, secondValue));
+            }
+            else if (firstValue != null) {
+                return createFrom(firstComponentMergeFallback.apply(firstValue));
+            }
+            else if (secondValue != null) {
+                return createFrom(secondComponentMergeFallback.apply(secondValue));
+            }
+            else {
+                return empty();
+            }
+        }
+        else {
+            return empty();
+        }
+    }
+
+    /**
      * Switches the wrapped optional value if it is absent with
      * the provided value.
      *

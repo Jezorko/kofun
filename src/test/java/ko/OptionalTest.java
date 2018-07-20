@@ -453,42 +453,252 @@ public class OptionalTest {
 
     @Test
     public void explodeAndMerge_shouldNotMergeIfOptionalIsEmpty() {
+        // given:
+        Optional<?> optional = Optional.empty();
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                second -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
     }
 
     @Test
     public void explodeAndMerge_shouldNotMergeIfExplodedComponentsAreAbsentAndNoFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
+                                                                second -> null,
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
     }
 
     @Test
     public void explodeAndMerge_shouldNotMergeIfFirstExplodedComponentIsAbsentAndNoFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
+                                                                second -> new Object(),
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
     }
 
     @Test
     public void explodeAndMerge_shouldNotMergeIfSecondExplodedComponentIsAbsentAndNoFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> new Object(),
+                                                                second -> null,
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
     }
 
     @Test
     public void explodeAndMerge_shouldMergeIfBothExplodedComponentsArePresentsEvenIfNoFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        Object firstComponent = new Object();
+        Object secondComponent = new Object();
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
+                                                                second -> secondComponent,
+                                                                (first, second) -> expectedResult);
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
     }
 
     @Test
     public void explodeAndMerge_shouldNotMergeIfFirstExplodedComponentIsAbsentAndOneFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
+                                                                second -> new Object(),
+                                                                firstFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
     }
 
     @Test
     public void explodeAndMerge_shouldMergeIfFirstExplodedComponentIsPresentAndSecondExplodedComponentIsAbsentAndOneFallbackIsProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        Object firstComponent = new Object();
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
+                                                                second -> null,
+                                                                firstFallback -> expectedResult,
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
     }
 
     @Test
     public void explodeAndMerge_shouldNotMergeIfBothExplodedComponentsAreAbsentAndTwoFallbacksAreProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
+                                                                second -> null,
+                                                                firstFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                secondFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertFalse(mergeResult.isPresent());
     }
 
     @Test
     public void explodeAndMerge_shouldMergeIfFirstExplodedComponentsIsPresentAndSecondExplodedComponentIsAbsentAndTwoFallbacksAreProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        Object firstComponent = new Object();
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
+                                                                second -> null,
+                                                                firstFallback -> expectedResult,
+                                                                secondFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
     }
 
     @Test
     public void explodeAndMerge_shouldMergeIfFirstExplodedComponentsIsAbsentAndSecondExplodedComponentIsPresentAndTwoFallbacksAreProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        Object secondComponent = new Object();
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
+                                                                second -> secondComponent,
+                                                                firstFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                secondFallback -> expectedResult,
+                                                                (first, second) -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                });
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
+    }
+
+    @Test
+    public void explodeAndMerge_shouldMergeIfBothExplodedComponentsArePresentsAndTwoFallbacksAreProvided() {
+        // given:
+        Object anyValue = new Object();
+        Optional<?> optional = Optional.optional(anyValue);
+
+        Object firstComponent = new Object();
+        Object secondComponent = new Object();
+        Object expectedResult = new Object();
+
+        // when:
+        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
+                                                                second -> secondComponent,
+                                                                firstFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                secondFallback -> {
+                                                                    Assert.fail();
+                                                                    return null;
+                                                                },
+                                                                (first, second) -> expectedResult);
+
+        // then:
+        assertTrue(mergeResult.isPresent());
+        assertSame(expectedResult, mergeResult.get());
     }
 
     @Test
