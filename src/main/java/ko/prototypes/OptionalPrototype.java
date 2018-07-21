@@ -24,7 +24,7 @@ import java.util.function.*;
  * @param <ValueType>       the type of the wrapped optional value
  * @param <NewOptionalType> the type representing the result of chaining transformation methods
  */
-public interface OptionalPrototype<ValueType, NewOptionalType> extends FluentPrototype, Iterable<ValueType> {
+public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPrototype> extends FluentPrototype, Iterable<ValueType> {
 
     /**
      * Returns the wrapped optional value.
