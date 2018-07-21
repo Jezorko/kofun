@@ -13,7 +13,7 @@ public class EmptyOptionalTest {
     @Test
     public void isPresent_shouldAlwaysReturnFalse() {
         // given:
-        Optional<Object> emptyOptional = new EmptyOptional();
+        Optional<Object> emptyOptional = new EmptyOptional<>();
 
         // expect:
         assertFalse(emptyOptional.isPresent());
@@ -27,7 +27,7 @@ public class EmptyOptionalTest {
     @Test
     public void equals_shouldReturnTrueIfOtherOptionalIsEmptyEvenIfItIsNotAnInstanceOfEmptyOptional() {
         // given:
-        Optional<Object> emptyOptional = new EmptyOptional();
+        Optional<Object> emptyOptional = new EmptyOptional<>();
         Optional<Object> otherEmptyOptional = new Optional<Object>() {
             @NotNull
             @Override
@@ -38,12 +38,6 @@ public class EmptyOptionalTest {
             @Override
             public boolean isPresent() {
                 return false;
-            }
-
-            @NotNull
-            @Override
-            public <AnyValue, NewOptionalType extends Optional<AnyValue>> NewOptionalType createFrom(AnyValue anyValue) {
-                return Optional.optional(anyValue);
             }
         };
 

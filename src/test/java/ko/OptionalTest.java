@@ -1,5 +1,6 @@
 package ko;
 
+import ko.prototypes.OptionalPrototype;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -7,9 +8,16 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static ko.Optional.optional;
+import static ko.prototypes.ExtensibleFluentChainTestUtil.prototypeImplementation;
+import static ko.prototypes.ExtensibleFluentChainTestUtil.test;
 import static org.junit.Assert.*;
 
 public class OptionalTest {
+
+    @Test
+    public void shouldReimplementAllExtensibleFluentChainMethods() {
+        test(prototypeImplementation(OptionalPrototype.class, Optional.class));
+    }
 
     @Test
     public void optional_fromNullShouldCreateAnEmptyOptional() {
@@ -243,7 +251,7 @@ public class OptionalTest {
 
         // then:
         assertTrue(result.isPresent());
-        assertSame(mappedOptional, result);
+        assertSame(otherValue, result.get());
     }
 
     @Test
@@ -253,17 +261,17 @@ public class OptionalTest {
         Optional<?> secondOptional = Optional.empty();
 
         // when:
-        Optional<Object> firstMergeResult = firstOptional.mergeWith(secondOptional,
-                                                                    (o1, o2) -> {
-                                                                        Assert.fail();
-                                                                        return null;
-                                                                    });
+        Optional<?> firstMergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                               (o1, o2) -> {
+                                                                   Assert.fail();
+                                                                   return null;
+                                                               });
 
-        Optional<Object> secondMergeResult = secondOptional.mergeWith(firstOptional,
-                                                                      (o1, o2) -> {
-                                                                          Assert.fail();
-                                                                          return null;
-                                                                      });
+        Optional<?> secondMergeResult = secondOptional.mergeWith(firstOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                                 (o1, o2) -> {
+                                                                     Assert.fail();
+                                                                     return null;
+                                                                 });
 
         // then:
         assertFalse(firstMergeResult.isPresent());
@@ -278,11 +286,11 @@ public class OptionalTest {
         Optional<?> secondOptional = Optional.optional(anyValue);
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               (o1, o2) -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          (o1, o2) -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -298,12 +306,12 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               first -> expectedResult,
-                                                               (o1, o2) -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          first -> expectedResult,
+                                                          (o1, o2) -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -320,16 +328,16 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               first -> expectedResult,
-                                                               second -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               },
-                                                               (o1, o2) -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          first -> expectedResult,
+                                                          second -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          },
+                                                          (o1, o2) -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -346,16 +354,16 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               first -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               },
-                                                               second -> expectedResult,
-                                                               (o1, o2) -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          first -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          },
+                                                          second -> expectedResult,
+                                                          (o1, o2) -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -373,12 +381,12 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               first -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               },
-                                                               (first, second) -> expectedResult);
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          first -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          },
+                                                          (first, second) -> expectedResult);
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -393,11 +401,11 @@ public class OptionalTest {
         Optional<?> secondOptional = Optional.empty();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               (o1, o2) -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          (o1, o2) -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -414,12 +422,12 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               (first, second) -> {
-                                                                   assertSame(anyValue, first);
-                                                                   assertSame(anyOtherValue, second);
-                                                                   return expectedResult;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          (first, second) -> {
+                                                              assertSame(anyValue, first);
+                                                              assertSame(anyOtherValue, second);
+                                                              return expectedResult;
+                                                          });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -433,19 +441,19 @@ public class OptionalTest {
         Optional<?> secondOptional = Optional.empty();
 
         // when:
-        Optional<Object> mergeResult = firstOptional.mergeWith(secondOptional,
-                                                               first -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               },
-                                                               second -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               },
-                                                               (first, second) -> {
-                                                                   Assert.fail();
-                                                                   return null;
-                                                               });
+        Optional<?> mergeResult = firstOptional.mergeWith(secondOptional, // TODO: for some reason doesn't work without wildcard (?)
+                                                          first -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          },
+                                                          second -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          },
+                                                          (first, second) -> {
+                                                              Assert.fail();
+                                                              return null;
+                                                          });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -457,18 +465,18 @@ public class OptionalTest {
         Optional<?> optional = Optional.empty();
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                second -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> { // TODO: for some reason doesn't work without wildcard (?)
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           second -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -481,12 +489,12 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
-                                                                second -> null,
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> null, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> null,
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -499,12 +507,12 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
-                                                                second -> new Object(),
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> null, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> new Object(),
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -517,12 +525,12 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> new Object(),
-                                                                second -> null,
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> new Object(), // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> null,
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -539,9 +547,9 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
-                                                                second -> secondComponent,
-                                                                (first, second) -> expectedResult);
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> firstComponent, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> secondComponent,
+                                                           (first, second) -> expectedResult);
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -555,16 +563,16 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
-                                                                second -> new Object(),
-                                                                firstFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> null, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> new Object(),
+                                                           firstFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -580,13 +588,13 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
-                                                                second -> null,
-                                                                firstFallback -> expectedResult,
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> firstComponent, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> null,
+                                                           firstFallback -> expectedResult,
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -600,20 +608,20 @@ public class OptionalTest {
         Optional<?> optional = Optional.optional(anyValue);
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
-                                                                second -> null,
-                                                                firstFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                secondFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> null, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> null,
+                                                           firstFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           secondFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertFalse(mergeResult.isPresent());
@@ -629,17 +637,17 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
-                                                                second -> null,
-                                                                firstFallback -> expectedResult,
-                                                                secondFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> firstComponent, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> null,
+                                                           firstFallback -> expectedResult,
+                                                           secondFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -656,17 +664,17 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> null,
-                                                                second -> secondComponent,
-                                                                firstFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                secondFallback -> expectedResult,
-                                                                (first, second) -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                });
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> null, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> secondComponent,
+                                                           firstFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           secondFallback -> expectedResult,
+                                                           (first, second) -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           });
 
         // then:
         assertTrue(mergeResult.isPresent());
@@ -684,17 +692,17 @@ public class OptionalTest {
         Object expectedResult = new Object();
 
         // when:
-        Optional<Object> mergeResult = optional.explodeAndMerge(first -> firstComponent,
-                                                                second -> secondComponent,
-                                                                firstFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                secondFallback -> {
-                                                                    Assert.fail();
-                                                                    return null;
-                                                                },
-                                                                (first, second) -> expectedResult);
+        Optional<?> mergeResult = optional.explodeAndMerge(first -> firstComponent, // TODO: for some reason doesn't work without wildcard (?)
+                                                           second -> secondComponent,
+                                                           firstFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           secondFallback -> {
+                                                               Assert.fail();
+                                                               return null;
+                                                           },
+                                                           (first, second) -> expectedResult);
 
         // then:
         assertTrue(mergeResult.isPresent());

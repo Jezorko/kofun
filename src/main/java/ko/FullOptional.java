@@ -1,22 +1,23 @@
 package ko;
 
+import ko.prototypes.OptionalPrototype;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-final class FullOptional<Value> implements Optional<Value> {
+final class FullOptional<ValueType> implements Optional<ValueType> {
 
-    private final Value value;
+    private final ValueType value;
 
-    FullOptional(Value value) {
+    FullOptional(ValueType value) {
         Objects.requireNonNull(value, "Null value given to non-empty optional");
         this.value = value;
     }
 
     @NotNull
     @Override
-    public Value get() {
+    public ValueType get() {
         return value;
     }
 
@@ -31,11 +32,11 @@ final class FullOptional<Value> implements Optional<Value> {
         if (this == other) {
             return true;
         }
-        else if (!(other instanceof Optional)) {
+        else if (!(other instanceof OptionalPrototype)) {
             return false;
         }
         else {
-            return Optionals.equals(this, (Optional) other);
+            return Optionals.equals(this, (OptionalPrototype) other);
         }
     }
 

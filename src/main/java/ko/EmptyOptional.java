@@ -1,16 +1,17 @@
 package ko;
 
+import ko.prototypes.OptionalPrototype;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-final class EmptyOptional<Value> implements Optional<Value> {
+final class EmptyOptional<ValueType> implements Optional<ValueType> {
 
     @NotNull
     @Override
-    public Value get() {
+    public ValueType get() {
         throw new NoSuchElementException("No value present");
     }
 
@@ -25,11 +26,11 @@ final class EmptyOptional<Value> implements Optional<Value> {
         if (this == other) {
             return true;
         }
-        else if (!(other instanceof Optional)) {
+        else if (!(other instanceof OptionalPrototype)) {
             return false;
         }
         else {
-            return Optionals.equals(this, (Optional) other);
+            return Optionals.equals(this, (OptionalPrototype) other);
         }
     }
 
