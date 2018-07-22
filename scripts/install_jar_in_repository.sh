@@ -47,7 +47,7 @@ cd "${repositoryBranchName}"
 # install jar
 installationPath="${groupId//./\/}/${artifactId//./\/}/${projectVersion}"
 mkdir --parents "${installationPath}"
-echo mvn install:install-file \
+mvn install:install-file \
     -Dfile="${pathToJar}" \
     -DgroupId="${groupId}" \
     -DartifactId="${artifactId}" \
