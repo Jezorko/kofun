@@ -7,16 +7,16 @@ import org.junit.Test;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static ko.ExtensibleFluentChainTestUtil.prototypeImplementation;
+import static ko.ExtensibleFluentChainTestUtil.shouldReimplementAllExtensibleFluentChainMethods;
 import static ko.Optional.optional;
-import static ko.prototypes.ExtensibleFluentChainTestUtil.prototypeImplementation;
-import static ko.prototypes.ExtensibleFluentChainTestUtil.test;
 import static org.junit.Assert.*;
 
 public class OptionalTest {
 
     @Test
-    public void shouldReimplementAllExtensibleFluentChainMethods() {
-        test(prototypeImplementation(OptionalPrototype.class, Optional.class));
+    public void shouldConformToExtensibleFluentChainContract() {
+        shouldReimplementAllExtensibleFluentChainMethods(prototypeImplementation(OptionalPrototype.class, Optional.class));
     }
 
     @Test

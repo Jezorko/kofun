@@ -1,4 +1,8 @@
-package ko.prototypes;
+package ko;
+
+import ko.prototypes.ExtensibleFluentChain;
+import ko.prototypes.FluentPrototype;
+import org.jetbrains.annotations.Contract;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -10,19 +14,36 @@ import static java.util.stream.Collectors.toList;
  * Aids fluent prototype implementation by checking if all methods marked with
  * {@link ExtensibleFluentChain} annotation were reimplemented.
  */
-public class ExtensibleFluentChainTestUtil {
+public class ExtensibleFluentChainTestUtil extends StaticMethodsCollection {
 
+    /**
+     * @throws InstantiationOfStaticMethodsCollectionException on each call
+     */
+    @Contract(value = "-> fail", pure = true)
+    private ExtensibleFluentChainTestUtil() throws InstantiationOfStaticMethodsCollectionException {
+        super();
+    }
+
+    /**
+     * Creates a prototype-implementation pair to be used for testing.
+     *
+     * @param prototypeClass               class of given {@link FluentPrototype}
+     * @param prototypeImplementationClass class of implementation for given prototype
+     * @param <PrototypeType>              the type of prototype
+     *
+     * @return a new instance of {@link PrototypeImplementationPair}
+     */
     public static <PrototypeType extends FluentPrototype> PrototypeImplementationPair prototypeImplementation(Class<PrototypeType> prototypeClass,
                                                                                                               Class<? extends PrototypeType> prototypeImplementationClass) {
         return new PrototypeImplementationPair(prototypeClass, prototypeImplementationClass);
     }
 
     /**
-     * Tests if given pairs conform to {@link ExtensibleFluentChain} contract.
+     * Tests if implementations reimplement all methods from the prototype annotated with {@link ExtensibleFluentChain}.
      *
      * @param prototypesAndImplementations to test against
      */
-    public static void test(PrototypeImplementationPair... prototypesAndImplementations) {
+    public static void shouldReimplementAllExtensibleFluentChainMethods(PrototypeImplementationPair... prototypesAndImplementations) {
         Arrays.stream(prototypesAndImplementations)
               .map(ExtensibleFluentChainTestUtil::getNotImplementedFluentChainMethods)
               .filter(m -> !m.notImplementedMethods.isEmpty())
@@ -57,6 +78,9 @@ public class ExtensibleFluentChainTestUtil {
         }
     }
 
+    /**
+     * A pair representing a {@link FluentPrototype} class and its' implementation class.
+     */
     public final static class PrototypeImplementationPair {
         private final Class<? extends FluentPrototype> prototypeClass;
         private final Class<?> prototypeImplementationClass;
@@ -79,7 +103,7 @@ public class ExtensibleFluentChainTestUtil {
     }
 
     private final static class ExtensibleFluentChainMethodImplementationMissing extends RuntimeException {
-        public ExtensibleFluentChainMethodImplementationMissing() {
+        private ExtensibleFluentChainMethodImplementationMissing() {
             super("Not all methods marked with " + ExtensibleFluentChain.class + " annotation are implemented");
         }
     }
