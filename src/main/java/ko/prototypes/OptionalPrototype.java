@@ -24,7 +24,7 @@ import java.util.function.*;
  * @param <ValueType>       the type of the wrapped optional value
  * @param <NewOptionalType> the type representing the result of chaining transformation methods
  */
-public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPrototype> extends FluentPrototype, Iterable<ValueType> {
+public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPrototype> extends FluentPrototype<NewOptionalType>, Iterable<ValueType> {
 
     /**
      * Returns the wrapped optional value.
@@ -77,22 +77,6 @@ public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPr
     @NotNull
     @ExtensibleFluentChain
     <AnyValueType> NewOptionalType recreateEmpty();
-
-    /**
-     * Allows a type change of the current {@link OptionalPrototype} object.
-     * This method is used by methods marked with {@link ExtensibleFluentChain}
-     * when creating a new instance is not necessary, but the current
-     * object's type must be changed in order to comply with the generic type.
-     * This method does not need to be reimplemented for a subtype to comply
-     * with the {@link ExtensibleFluentChain} contract.
-     *
-     * @return the same instance of the {@link OptionalPrototype} object with type specified by the generic argument
-     */
-    @NotNull
-    @SuppressWarnings("unchecked")
-    default NewOptionalType retype() {
-        return (NewOptionalType) this;
-    }
 
     /**
      * Calls the given {@link Consumer} with the wrapped value if it is present.
