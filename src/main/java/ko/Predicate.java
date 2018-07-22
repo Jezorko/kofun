@@ -1,12 +1,15 @@
 package ko;
 
+import ko.prototypes.PredicatePrototype;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Equivalent of {@link java.util.function.Predicate} with additional methods.
  *
- * @param <T> the type of input for predicate
+ * @param <TestedType> the type of input for predicate
  */
 @FunctionalInterface
-public interface Predicate<T> extends java.util.function.Predicate<T> {
+public interface Predicate<TestedType> extends PredicatePrototype<TestedType, Predicate>, java.util.function.Predicate<TestedType> {
 
     /**
      * Raw {@link Predicate} for which any value is a match.
@@ -48,47 +51,54 @@ public interface Predicate<T> extends java.util.function.Predicate<T> {
      * Enhances given predicate with methods of {@link Predicate}.
      *
      * @param predicate to be enhanced
-     * @param <T>       type of value tested by the predicate
+     * @param <TestedType>       type of value tested by the predicate
      *
      * @return a new {@link Predicate}
      */
-    static <T> Predicate<T> from(java.util.function.Predicate<T> predicate) {
+    static <TestedType> Predicate<TestedType> from(java.util.function.Predicate<TestedType> predicate) {
         return predicate::test;
     }
 
-    /**
-     * Combines other predicate with XOR boolean function.
-     *
-     * @param other predicate to be combined with
-     *
-     * @return a new {@link Predicate}
-     */
-    default Predicate<? extends T> xor(java.util.function.Predicate<T> other) {
-        return t -> this.test(t) ^ other.test(t);
+    @Override
+    boolean test(TestedType testedValue);
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Predicate<TestedType> negate() {
+        return from(java.util.function.Predicate.super.negate());
     }
 
-    /**
-     * Combines other predicate with NAND boolean function.
-     *
-     * @param other predicate to be combined with
-     *
-     * @return a new {@link Predicate}
-     */
-    default Predicate<? extends T> nand(java.util.function.Predicate<T> other) {
-        return t -> this.negate()
-                        .test(t) || other.negate()
-                                         .test(t);
+    @Override
+    default Predicate<TestedType> and(java.util.function.Predicate<? super TestedType> other) {
+        return from(java.util.function.Predicate.super.and(other));
     }
 
-    /**
-     * Combines other predicate with NOR boolean function.
-     *
-     * @param other predicate to be combined with
-     *
-     * @return a new {@link Predicate}
-     */
-    default Predicate<? extends T> nor(java.util.function.Predicate<T> other) {
-        return t -> !(this.test(t) || other.test(t));
+    @Override
+    default Predicate<TestedType> or(java.util.function.Predicate<? super TestedType> other) {
+        return from(java.util.function.Predicate.super.or(other));
     }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Predicate<TestedType> xor(java.util.function.Predicate<? super TestedType> other) {
+        return PredicatePrototype.super.xor(other);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Predicate<TestedType> nand(java.util.function.Predicate<? super TestedType> other) {
+        return PredicatePrototype.super.nand(other);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Predicate<TestedType> nor(java.util.function.Predicate<? super TestedType> other) {
+        return PredicatePrototype.super.nor(other);
+    }
+
 
 }
