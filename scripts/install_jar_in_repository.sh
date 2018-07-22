@@ -2,6 +2,14 @@
 
 repositoryBranchName='repository'
 
+# check if build is a push to master
+if [[ "${TRAVIS_BRANCH}" != 'master' || "${TRAVIS_EVENT_TYPE}" != 'push' ]]; then
+    echo "This is not a push to master (${TRAVIS_EVENT_TYPE} -> ${TRAVIS_BRANCH}), jar will not be installed"
+    exit 0
+else
+    echo "This is a push to master, jar will be installed in the '${repositoryBranchName}' branch"
+fi
+
 function extractMavenProperty() {
     property="${1}"
     mvn -q \
