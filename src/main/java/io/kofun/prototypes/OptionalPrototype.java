@@ -1,5 +1,6 @@
-package ko.prototypes;
+package io.kofun.prototypes;
 
+import io.kofun.Optional;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +20,7 @@ import java.util.function.*;
  * Every method annotated with {@link ExtensibleFluentChain} must be implemented
  * as described by the annotation's documentation to retain generic type information
  * needed for chaining.
- * For example implementation see {@link ko.Optional} and its' two variants: {@link ko.FullOptional} and {@link ko.EmptyOptional}.
+ * For example implementation see {@link Optional} and its' two variants: {@link io.kofun.FullOptional} and {@link io.kofun.EmptyOptional}.
  *
  * @param <ValueType>       the type of the wrapped optional value
  * @param <NewOptionalType> the type representing the result of chaining transformation methods

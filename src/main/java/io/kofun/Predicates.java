@@ -1,4 +1,4 @@
-package ko;
+package io.kofun;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static ko.Predicate.alwaysFalse;
-import static ko.Predicate.alwaysTrue;
+import static io.kofun.Predicate.alwaysFalse;
+import static io.kofun.Predicate.alwaysTrue;
 
 /**
  * A collection of helpful static methods relevant to {@link Predicate}.

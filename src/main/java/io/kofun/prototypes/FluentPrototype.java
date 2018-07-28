@@ -1,4 +1,4 @@
-package ko.prototypes;
+package io.kofun.prototypes;
 
 import org.jetbrains.annotations.NotNull;
 

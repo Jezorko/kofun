@@ -67,7 +67,7 @@ And the dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.jezorko</groupId>
+    <groupId>io.kofun</groupId>
     <artifactId>kofun</artifactId>
     <version>EARLY-SNAPSHOT</version>
 </dependency>

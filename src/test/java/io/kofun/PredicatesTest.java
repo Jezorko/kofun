@@ -1,4 +1,4 @@
-package ko;
+package io.kofun;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -92,7 +92,7 @@ public class PredicatesTest {
         Predicate<Integer> throwingPredicate = p -> {throw new AssertionError("should not be executed");};
 
         // expect:
-        Predicates.and(ko.Predicate.alwaysFalse(), throwingPredicate)
+        Predicates.and(io.kofun.Predicate.alwaysFalse(), throwingPredicate)
                   .test(null);
     }
 
@@ -156,7 +156,7 @@ public class PredicatesTest {
         Predicate<Integer> throwingPredicate = p -> {throw new AssertionError("should not be executed");};
 
         // expect:
-        Predicates.or(ko.Predicate.alwaysTrue(), throwingPredicate)
+        Predicates.or(io.kofun.Predicate.alwaysTrue(), throwingPredicate)
                   .test(null);
     }
 
@@ -186,7 +186,7 @@ public class PredicatesTest {
     public void eachElement_shouldReturnTrueIfNeitherTestReturnsFalse() {
         // expect:
         AssertionUtils.assertPresent("filtering with always true predicate",
-                                     of(asList(1, 2, 3)).filter(Predicates.eachElement(ko.Predicate.alwaysTrue())));
+                                     of(asList(1, 2, 3)).filter(Predicates.eachElement(io.kofun.Predicate.alwaysTrue())));
         AssertionUtils.assertPresent("filtering matching list elements",
                                      of(asList(1, 2, 3)).filter(Predicates.eachElement(element -> element > 0)));
     }
@@ -211,7 +211,7 @@ public class PredicatesTest {
     public void neitherElement_shouldReturnTrueIfNeitherTestReturnsTrue() {
         // expect:
         AssertionUtils.assertPresent("filtering with always false predicate",
-                                     of(asList(1, 2, 3)).filter(Predicates.neitherElement(ko.Predicate.alwaysFalse())));
+                                     of(asList(1, 2, 3)).filter(Predicates.neitherElement(io.kofun.Predicate.alwaysFalse())));
         AssertionUtils.assertPresent("filtering not matching list elements",
                                      of(asList(1, 2, 3)).filter(Predicates.neitherElement(element -> element > 4)));
     }

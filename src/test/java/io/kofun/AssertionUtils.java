@@ -1,4 +1,4 @@
-package ko;
+package io.kofun;
 
 import org.junit.Assert;
 

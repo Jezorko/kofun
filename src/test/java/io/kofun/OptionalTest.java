@@ -1,15 +1,14 @@
-package ko;
+package io.kofun;
 
-import ko.prototypes.OptionalPrototype;
+import io.kofun.prototypes.OptionalPrototype;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static ko.ExtensibleFluentChainTestUtil.prototypeImplementation;
-import static ko.ExtensibleFluentChainTestUtil.shouldReimplementAllExtensibleFluentChainMethods;
-import static ko.Optional.optional;
+import static io.kofun.ExtensibleFluentChainTestUtil.prototypeImplementation;
+import static io.kofun.ExtensibleFluentChainTestUtil.shouldReimplementAllExtensibleFluentChainMethods;
 import static org.junit.Assert.*;
 
 public class OptionalTest {
@@ -22,7 +21,7 @@ public class OptionalTest {
     @Test
     public void optional_fromNullShouldCreateAnEmptyOptional() {
         // when:
-        Optional<?> optional = optional(null);
+        Optional<?> optional = Optional.optional(null);
 
         // then:
         assertTrue(optional instanceof EmptyOptional);
@@ -32,7 +31,7 @@ public class OptionalTest {
     public void optional_fromValueShouldCreateAFullOptional() {
         // when:
         Object anyValue = new Object();
-        Optional<?> optional = optional(anyValue);
+        Optional<?> optional = Optional.optional(anyValue);
 
         // then:
         assertTrue(optional instanceof FullOptional);

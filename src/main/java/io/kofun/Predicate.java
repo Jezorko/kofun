@@ -1,4 +1,4 @@
-package ko;
+package io.kofun;
 
 /**
  * Equivalent of {@link java.util.function.Predicate} with additional methods.

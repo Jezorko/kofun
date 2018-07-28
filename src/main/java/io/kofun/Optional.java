@@ -1,6 +1,6 @@
-package ko;
+package io.kofun;
 
-import ko.prototypes.OptionalPrototype;
+import io.kofun.prototypes.OptionalPrototype;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.*;

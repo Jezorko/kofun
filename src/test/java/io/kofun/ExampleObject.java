@@ -1,4 +1,4 @@
-package ko;
+package io.kofun;
 
 public class ExampleObject {
 

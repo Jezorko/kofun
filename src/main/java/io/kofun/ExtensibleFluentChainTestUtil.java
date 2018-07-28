@@ -1,7 +1,7 @@
-package ko;
+package io.kofun;
 
-import ko.prototypes.ExtensibleFluentChain;
-import ko.prototypes.FluentPrototype;
+import io.kofun.prototypes.ExtensibleFluentChain;
+import io.kofun.prototypes.FluentPrototype;
 import org.jetbrains.annotations.Contract;
 
 import java.lang.reflect.Method;

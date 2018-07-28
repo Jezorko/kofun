@@ -1,29 +1,23 @@
-package ko;
+package io.kofun;
 
-import ko.prototypes.OptionalPrototype;
+import io.kofun.prototypes.OptionalPrototype;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
-final class FullOptional<ValueType> implements Optional<ValueType> {
-
-    private final ValueType value;
-
-    FullOptional(ValueType value) {
-        Objects.requireNonNull(value, "Null value given to non-empty optional");
-        this.value = value;
-    }
+final class EmptyOptional<ValueType> implements Optional<ValueType> {
 
     @NotNull
     @Override
     public ValueType get() {
-        return value;
+        throw new NoSuchElementException("No value present");
     }
 
     @Override
     public boolean isPresent() {
-        return true;
+        return false;
     }
 
     @Override
@@ -42,12 +36,12 @@ final class FullOptional<ValueType> implements Optional<ValueType> {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        return Objects.hashCode(null);
     }
 
     @Override
     public String toString() {
-        return "Optional[" + value + "]";
+        return "Optional.empty";
     }
 
 }
