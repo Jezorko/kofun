@@ -43,4 +43,13 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         return retype();
     }
 
+    @NotNull
+    @ExtensibleFluentChain
+    default <ErrorType extends Throwable> NewTryType onError(Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
+        if (isError() && errorClass.isAssignableFrom(getError().getClass())) {
+            errorConsumer.accept(errorClass.cast(getError()));
+        }
+        return retype();
+    }
+
 }

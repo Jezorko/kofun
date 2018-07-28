@@ -78,4 +78,12 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     default Try<SuccessType> onError(@NotNull Consumer<? super Throwable> errorConsumer) {
         return TryPrototype.super.onError(errorConsumer);
     }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> onError(Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
+        return TryPrototype.super.onError(errorClass, errorConsumer);
+    }
+
 }
