@@ -34,4 +34,13 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         return retype();
     }
 
+    @NotNull
+    @ExtensibleFluentChain
+    default NewTryType onError(@NotNull Consumer<? super Throwable> errorConsumer) {
+        if (isError()) {
+            errorConsumer.accept(getError());
+        }
+        return retype();
+    }
+
 }

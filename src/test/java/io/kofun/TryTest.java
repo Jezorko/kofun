@@ -208,12 +208,37 @@ public class TryTest {
     public void onSuccess_shouldNotBeCalledForAnErrorTry() {
         // given:
         Throwable error = new Throwable();
-
-        // when:
         Try<Object> errorTry = Try.error(error);
 
         // then:
         errorTry.onSuccess(s -> fail());
+    }
+
+    @Test
+    public void onError_shouldNotBeCalledForASuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // then:
+        successTry.onError(e -> fail());
+    }
+
+    @Test
+    public void onError_shouldBeCalledForAnErrorTry() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onError(e -> {
+            executedOnError.set(true);
+            assertSame(error, e);
+        });
+
+        // then:
+        assertTrue(executedOnError.get());
     }
 
 }
