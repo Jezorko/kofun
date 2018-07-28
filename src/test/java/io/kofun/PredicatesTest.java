@@ -115,7 +115,7 @@ public class PredicatesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void and_shouldThrowIfPredicateArrayIsNull() {
-        Predicates.and(null);
+        Predicates.and((Predicate[]) null);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class PredicatesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void or_shouldThrowIfPredicateArrayIsNull() {
-        Predicates.or(null);
+        Predicates.or((Predicate[]) null);
     }
 
     @Test
@@ -284,7 +284,7 @@ public class PredicatesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void isIn_shouldThrowIfValuesAreNull() {
-        Predicates.isIn(null);
+        Predicates.isIn((Object[]) null);
     }
 
     @Test
@@ -324,7 +324,7 @@ public class PredicatesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void isNotIn_shouldThrowIfValuesAreNull() {
-        Predicates.isNotIn(null);
+        Predicates.isNotIn((Object[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
