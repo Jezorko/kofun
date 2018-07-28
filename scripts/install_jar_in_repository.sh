@@ -10,6 +10,9 @@ else
     echo "This is a push to master, jar will be installed in the '${repositoryBranchName}' branch"
 fi
 
+# build a jar
+mvn package
+
 function extractMavenProperty() {
     property="${1}"
     mvn -q \
