@@ -1,7 +1,7 @@
 # kofun
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://travis-ci.org/Jezorko/kofun.svg?branch=master)](https://travis-ci.org/Jezorko/kofun)
+[![Build Status](https://staging.travis-ci.org/Jezorko/kofun.svg?branch=master)](https://staging.travis-ci.org/Jezorko/kofun)
 [![Code coverage](https://codecov.io/gh/jezorko/kofun/branch/master/graph/badge.svg)](https://codecov.io/gh/Jezorko/kofun)
 
 ## What is this?
