@@ -1,9 +1,21 @@
 language: java
+jdk: openjdk10
 
-script: mvn clean package cobertura:cobertura
+env:
+  global:
+   - CC_TEST_REPORTER_ID=d7b8ca82b3e3da7174bf3fd5f7c4b122140f18082f8ef8487cdfe8284832bbc1
+
+before_script:
+ - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+ - chmod +x ./cc-test-reporter
+ - ./cc-test-reporter before-build
+
+script: mvn clean test
+
+after_script:
+ - (cd "${TRAVIS_BUILD_DIR}/src/main/java/" && "${TRAVIS_BUILD_DIR}/cc-test-reporter" format-coverage --input-type jacoco "${TRAVIS_BUILD_DIR}/target/site/jacoco/jacoco.xml")
+ - (cd "${TRAVIS_BUILD_DIR}/src/main/java/" && "${TRAVIS_BUILD_DIR}/cc-test-reporter" upload-coverage)
 
 before_install: openssl aes-256-cbc -K $encrypted_a94418be0ba2_key -iv $encrypted_a94418be0ba2_iv -in id_rsa.enc -out id_rsa -d
 
-after_success:
- - bash <(curl -s https://codecov.io/bash)
- - scripts/install_jar_in_repository.sh
+after_success: scripts/install_jar_in_repository.sh
