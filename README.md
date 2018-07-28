@@ -1,8 +1,9 @@
 # kofun
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://staging.travis-ci.org/Jezorko/kofun.svg?branch=master)](https://staging.travis-ci.org/Jezorko/kofun)
-[![Code coverage](https://codecov.io/gh/jezorko/kofun/branch/master/graph/badge.svg)](https://codecov.io/gh/Jezorko/kofun)
+[![Build Status](https://travis-ci.org/Jezorko/kofun.svg?branch=master)](https://travis-ci.org/Jezorko/kofun)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f1ec4528ddab4eccb759/maintainability)](https://codeclimate.com/github/Jezorko/kofun/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f1ec4528ddab4eccb759/test_coverage)](https://codeclimate.com/github/Jezorko/kofun/test_coverage)
 
 ## What is this?
 
