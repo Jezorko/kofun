@@ -4,8 +4,11 @@ import io.kofun.prototypes.TryPrototype;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static io.kofun.ExtensibleFluentChainTestUtil.prototypeImplementation;
 import static io.kofun.ExtensibleFluentChainTestUtil.shouldReimplementAllExtensibleFluentChainMethods;
+import static org.junit.Assert.*;
 
 public class TryTest {
 
@@ -23,9 +26,9 @@ public class TryTest {
         final Try<Object> result = Try.ofSupplier(() -> anyValue);
 
         // then:
-        Assert.assertTrue(result.isSuccess());
-        Assert.assertFalse(result.isError());
-        Assert.assertSame(anyValue, result.getSuccess());
+        assertTrue(result.isSuccess());
+        assertFalse(result.isError());
+        assertSame(anyValue, result.getSuccess());
     }
 
     @Test
@@ -37,9 +40,9 @@ public class TryTest {
         final Try<Object> result = Try.ofSupplier(() -> {throw error;});
 
         // then:
-        Assert.assertFalse(result.isSuccess());
-        Assert.assertTrue(result.isError());
-        Assert.assertSame(error, result.getError());
+        assertFalse(result.isSuccess());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
     }
 
     @Test
@@ -51,9 +54,9 @@ public class TryTest {
         final Try<Object> result = Try.ofCallable(() -> anyValue);
 
         // then:
-        Assert.assertTrue(result.isSuccess());
-        Assert.assertFalse(result.isError());
-        Assert.assertSame(anyValue, result.getSuccess());
+        assertTrue(result.isSuccess());
+        assertFalse(result.isError());
+        assertSame(anyValue, result.getSuccess());
     }
 
     @Test
@@ -65,9 +68,9 @@ public class TryTest {
         final Try<Object> result = Try.ofCallable(() -> {throw error;});
 
         // then:
-        Assert.assertFalse(result.isSuccess());
-        Assert.assertTrue(result.isError());
-        Assert.assertSame(error, result.getError());
+        assertFalse(result.isSuccess());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
     }
 
     @Test
@@ -76,8 +79,8 @@ public class TryTest {
         final Try<Void> result = Try.runRunnable(() -> {});
 
         // then:
-        Assert.assertTrue(result.isSuccess());
-        Assert.assertFalse(result.isError());
+        assertTrue(result.isSuccess());
+        assertFalse(result.isError());
     }
 
     @Test
@@ -89,9 +92,9 @@ public class TryTest {
         final Try<Void> result = Try.runRunnable(() -> {throw error;});
 
         // then:
-        Assert.assertFalse(result.isSuccess());
-        Assert.assertTrue(result.isError());
-        Assert.assertSame(error, result.getError());
+        assertFalse(result.isSuccess());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
     }
 
     @Test
@@ -100,8 +103,8 @@ public class TryTest {
         final Try<Void> result = Try.run(() -> {});
 
         // then:
-        Assert.assertTrue(result.isSuccess());
-        Assert.assertFalse(result.isError());
+        assertTrue(result.isSuccess());
+        assertFalse(result.isError());
         Assert.assertNull(result.getSuccess());
     }
 
@@ -114,9 +117,9 @@ public class TryTest {
         final Try<Void> result = Try.run(() -> {throw error;});
 
         // then:
-        Assert.assertFalse(result.isSuccess());
-        Assert.assertTrue(result.isError());
-        Assert.assertSame(error, result.getError());
+        assertFalse(result.isSuccess());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
     }
 
     @Test
@@ -128,9 +131,9 @@ public class TryTest {
         final Try<Object> result = Try.of(() -> anyValue);
 
         // then:
-        Assert.assertTrue(result.isSuccess());
-        Assert.assertFalse(result.isError());
-        Assert.assertSame(anyValue, result.getSuccess());
+        assertTrue(result.isSuccess());
+        assertFalse(result.isError());
+        assertSame(anyValue, result.getSuccess());
     }
 
     @Test
@@ -142,9 +145,9 @@ public class TryTest {
         final Try<Object> result = Try.of(() -> {throw error;});
 
         // then:
-        Assert.assertFalse(result.isSuccess());
-        Assert.assertTrue(result.isError());
-        Assert.assertSame(error, result.getError());
+        assertFalse(result.isSuccess());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
     }
 
     @Test
@@ -156,9 +159,9 @@ public class TryTest {
         final Try<Object> result = Try.success(anyValue);
 
         // then:
-        Assert.assertTrue(result.isSuccess());
-        Assert.assertFalse(result.isError());
-        Assert.assertSame(anyValue, result.getSuccess());
+        assertTrue(result.isSuccess());
+        assertFalse(result.isError());
+        assertSame(anyValue, result.getSuccess());
     }
 
     @Test
@@ -170,9 +173,9 @@ public class TryTest {
         final Try<Object> result = Try.error(error);
 
         // then:
-        Assert.assertFalse(result.isSuccess());
-        Assert.assertTrue(result.isError());
-        Assert.assertSame(error, result.getError());
+        assertFalse(result.isSuccess());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
     }
 
     @Test(expected = Error.class)
@@ -182,6 +185,35 @@ public class TryTest {
 
         // expect:
         Try.error(error);
+    }
+
+    @Test
+    public void onSuccess_shouldBeCalledForASuccessTry() {
+        // given:
+        AtomicBoolean executedOnSuccess = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        successTry.onSuccess(s -> {
+            executedOnSuccess.set(true);
+            assertSame(anyValue, s);
+        });
+
+        // then:
+        assertTrue(executedOnSuccess.get());
+    }
+
+    @Test
+    public void onSuccess_shouldNotBeCalledForAnErrorTry() {
+        // given:
+        Throwable error = new Throwable();
+
+        // when:
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onSuccess(s -> fail());
     }
 
 }

@@ -4,6 +4,7 @@ import io.kofun.prototypes.TryPrototype;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
@@ -60,6 +61,15 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @Override
     default <AnySuccessType> Try<AnySuccessType> recreateError(Throwable error) {
         return error(error);
+    }
+
+    /* Reimplementing @ExtensibleFluentChain methods */
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onSuccess(@NotNull Consumer<? super SuccessType> successConsumer) {
+        return TryPrototype.super.onSuccess(successConsumer);
     }
 
 }
