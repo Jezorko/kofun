@@ -18,12 +18,12 @@ public class TryTest {
     }
 
     @Test
-    public void ofSupplier_shouldCreateSuccessIfSupplierDoesNotThrow() {
+    public void trySupplier_shouldCreateSuccessIfSupplierDoesNotThrow() {
         // given:
         Object anyValue = new Object();
 
         // when:
-        final Try<Object> result = Try.ofSupplier(() -> anyValue);
+        final Try<Object> result = Try.trySupplier(() -> anyValue);
 
         // then:
         assertTrue(result.isSuccess());
@@ -32,12 +32,12 @@ public class TryTest {
     }
 
     @Test
-    public void ofSupplier_shouldCreateErrorIfSupplierThrows() {
+    public void trySupplier_shouldCreateErrorIfSupplierThrows() {
         // given:
         RuntimeException error = new RuntimeException();
 
         // when:
-        final Try<Object> result = Try.ofSupplier(() -> {throw error;});
+        final Try<Object> result = Try.trySupplier(() -> {throw error;});
 
         // then:
         assertFalse(result.isSuccess());
@@ -46,12 +46,12 @@ public class TryTest {
     }
 
     @Test
-    public void ofCallable_shouldCreateSuccessIfCallableDoesNotThrow() {
+    public void tryCallable_shouldCreateSuccessIfCallableDoesNotThrow() {
         // given:
         Object anyValue = new Object();
 
         // when:
-        final Try<Object> result = Try.ofCallable(() -> anyValue);
+        final Try<Object> result = Try.tryCallable(() -> anyValue);
 
         // then:
         assertTrue(result.isSuccess());
@@ -60,12 +60,12 @@ public class TryTest {
     }
 
     @Test
-    public void ofCallable_shouldCreateErrorIfCallableThrows() {
+    public void tryCallable_shouldCreateErrorIfCallableThrows() {
         // given:
         RuntimeException error = new RuntimeException();
 
         // when:
-        final Try<Object> result = Try.ofCallable(() -> {throw error;});
+        final Try<Object> result = Try.tryCallable(() -> {throw error;});
 
         // then:
         assertFalse(result.isSuccess());
@@ -74,9 +74,9 @@ public class TryTest {
     }
 
     @Test
-    public void runRunnable_shouldCreateSuccessIfRunnableDoesNotThrow() {
+    public void tryRunnable_shouldCreateSuccessIfRunnableDoesNotThrow() {
         // when:
-        final Try<Void> result = Try.runRunnable(() -> {});
+        final Try<Void> result = Try.tryRunnable(() -> {});
 
         // then:
         assertTrue(result.isSuccess());
@@ -84,12 +84,12 @@ public class TryTest {
     }
 
     @Test
-    public void runRunnable_shouldCreateErrorIfRunnableThrows() {
+    public void tryRunnable_shouldCreateErrorIfRunnableThrows() {
         // given:
         RuntimeException error = new RuntimeException();
 
         // when:
-        final Try<Void> result = Try.runRunnable(() -> {throw error;});
+        final Try<Void> result = Try.tryRunnable(() -> {throw error;});
 
         // then:
         assertFalse(result.isSuccess());
@@ -98,9 +98,9 @@ public class TryTest {
     }
 
     @Test
-    public void run_shouldCreateSuccessIfRunnableDoesNotThrow() {
+    public void tryRun_shouldCreateSuccessIfRunnableDoesNotThrow() {
         // when:
-        final Try<Void> result = Try.run(() -> {});
+        final Try<Void> result = Try.tryRun(() -> {});
 
         // then:
         assertTrue(result.isSuccess());
@@ -109,12 +109,12 @@ public class TryTest {
     }
 
     @Test
-    public void run_shouldCreateErrorIfRunnableThrows() {
+    public void tryRun_shouldCreateErrorIfRunnableThrows() {
         // given:
         RuntimeException error = new RuntimeException();
 
         // when:
-        final Try<Void> result = Try.run(() -> {throw error;});
+        final Try<Void> result = Try.tryRun(() -> {throw error;});
 
         // then:
         assertFalse(result.isSuccess());
@@ -123,12 +123,12 @@ public class TryTest {
     }
 
     @Test
-    public void of_shouldCreateSuccessIfSupplierDoesNotThrow() {
+    public void tryOf_shouldCreateSuccessIfSupplierDoesNotThrow() {
         // given:
         Object anyValue = new Object();
 
         // when:
-        final Try<Object> result = Try.of(() -> anyValue);
+        final Try<Object> result = Try.tryOf(() -> anyValue);
 
         // then:
         assertTrue(result.isSuccess());
@@ -137,12 +137,12 @@ public class TryTest {
     }
 
     @Test
-    public void of_shouldCreateErrorIfSupplierThrows() {
+    public void tryOf_shouldCreateErrorIfSupplierThrows() {
         // given:
         Throwable error = new Throwable();
 
         // when:
-        final Try<Object> result = Try.of(() -> {throw error;});
+        final Try<Object> result = Try.tryOf(() -> {throw error;});
 
         // then:
         assertFalse(result.isSuccess());

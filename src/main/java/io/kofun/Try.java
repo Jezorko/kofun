@@ -10,30 +10,30 @@ import java.util.function.Supplier;
 public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
 
     @NotNull
-    static <SuccessType> Try<SuccessType> ofSupplier(@NotNull Supplier<SuccessType> supplier) {
-        return of(supplier::get);
+    static <SuccessType> Try<SuccessType> trySupplier(@NotNull Supplier<SuccessType> supplier) {
+        return tryOf(supplier::get);
     }
 
     @NotNull
-    static <SuccessType> Try<SuccessType> ofCallable(@NotNull Callable<SuccessType> callable) {
-        return of(callable::call);
+    static <SuccessType> Try<SuccessType> tryCallable(@NotNull Callable<SuccessType> callable) {
+        return tryOf(callable::call);
     }
 
     @NotNull
-    static Try<Void> runRunnable(@NotNull Runnable runnable) {
-        return run(runnable::run);
+    static Try<Void> tryRunnable(@NotNull Runnable runnable) {
+        return tryRun(runnable::run);
     }
 
     @NotNull
-    static Try<Void> run(@NotNull CheckedRunnable runnable) {
-        return of(() -> {
+    static Try<Void> tryRun(@NotNull CheckedRunnable runnable) {
+        return tryOf(() -> {
             runnable.run();
             return null;
         });
     }
 
     @NotNull
-    static <SuccessType> Try<SuccessType> of(@NotNull CheckedSupplier<SuccessType, ? extends Throwable> supplier) {
+    static <SuccessType> Try<SuccessType> tryOf(@NotNull CheckedSupplier<SuccessType, ? extends Throwable> supplier) {
         try {
             return new SuccessTry<>(supplier.get());
         } catch (Throwable error) {
