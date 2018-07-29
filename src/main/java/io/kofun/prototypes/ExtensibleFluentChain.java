@@ -1,5 +1,7 @@
 package io.kofun.prototypes;
 
+import org.jetbrains.annotations.Contract;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,7 +33,7 @@ import static java.lang.annotation.ElementType.METHOD;
  * Otherwise the Java compiler will not have enough information
  * about the type and will not allow for calling the extended methods.
  * For more details refer to <a href="https://github.com/Jezorko/kofun/issues/8#issuecomment-406801543">this issue</a>.
- * All classes in {@link ko.prototypes} employ those semantics.
+ * All classes in {@link io.kofun.prototypes} employ those semantics.
  */
 @Documented
 @Target(METHOD)

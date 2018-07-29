@@ -1,5 +1,6 @@
 package io.kofun.prototypes;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,6 +21,7 @@ public interface FluentPrototype<NewFluentPrototypeType extends FluentPrototype>
      * @return the same instance of the {@link FluentPrototype} object with type specified by the generic argument
      */
     @NotNull
+    @Contract("-> this")
     @SuppressWarnings("unchecked")
     default NewFluentPrototypeType retype() {
         return (NewFluentPrototypeType) this;

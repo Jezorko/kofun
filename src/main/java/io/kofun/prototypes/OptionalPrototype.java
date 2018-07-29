@@ -88,6 +88,7 @@ public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPr
      * @return the same instance of the {@link OptionalPrototype} object with type specified by the generic argument
      */
     @NotNull
+    @Contract(value = "_ -> this", pure = true)
     @ExtensibleFluentChain
     default NewOptionalType onPresent(@NotNull Consumer<? super ValueType> optionalValueConsumer) {
         if (isPresent()) {
@@ -104,6 +105,7 @@ public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPr
      * @return the same instance of the {@link OptionalPrototype} object with type specified by the generic argument
      */
     @NotNull
+    @Contract(value = "_ -> this", pure = true)
     @ExtensibleFluentChain
     default NewOptionalType onEmpty(@NotNull Runnable onEmptyAction) {
         if (!isPresent()) {
