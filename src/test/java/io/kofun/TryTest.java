@@ -214,6 +214,152 @@ public class TryTest {
         errorTry.onSuccess(s -> fail());
     }
 
+    @Test(expected = TestSuccessException.class)
+    public void onSuccess_shouldThrowForSuccessTryIfConsumerThrows() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // then:
+        successTry.onSuccess(TestSuccessException::throwIt);
+    }
+
+    @Test
+    public void onSuccess_shouldNotThrowForErrorTryIfConsumerThrows() {
+        // given:
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onSuccess(TestSuccessException::throwIt);
+    }
+
+    @Test
+    public void onSuccessTryConsumer_shouldNotThrowForSuccessTryIfConsumerThrows() {
+        // given:
+        AtomicBoolean wasOnSuccessTryConsumerExecuted = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        RuntimeException error = new RuntimeException();
+
+        // when:
+        Try<Object> result = successTry.onSuccessTryConsumer(success -> {
+            assertSame(anyValue, success);
+            wasOnSuccessTryConsumerExecuted.set(true);
+            throw error;
+        });
+
+        // then:
+        assertTrue(wasOnSuccessTryConsumerExecuted.get());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
+    }
+
+    @Test
+    public void onSuccessTryRunnable_shouldNotThrowForSuccessTryIfRunnableThrows() {
+        // given:
+        AtomicBoolean wasOnSuccessTryRunnableExecuted = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        RuntimeException error = new RuntimeException();
+
+        // when:
+        Try<Object> result = successTry.onSuccessTryRunnable(() -> {
+            wasOnSuccessTryRunnableExecuted.set(true);
+            throw error;
+        });
+
+        // then:
+        assertTrue(wasOnSuccessTryRunnableExecuted.get());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
+    }
+
+    @Test
+    public void onSuccessTryRun_shouldNotThrowForSuccessTryIfCheckedRunnableThrows() {
+        // given:
+        AtomicBoolean wasOnSuccessTryRunExecuted = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable error = new Throwable();
+
+        // when:
+        Try<Object> result = successTry.onSuccessTryRun(() -> {
+            wasOnSuccessTryRunExecuted.set(true);
+            throw error;
+        });
+
+        // then:
+        assertTrue(wasOnSuccessTryRunExecuted.get());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
+    }
+
+    @Test
+    public void onSuccessTry_shouldNotThrowForSuccessTryIfCheckedConsumerThrows() {
+        // given:
+        AtomicBoolean wasOnSuccessTryExecuted = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable error = new Throwable();
+
+        // when:
+        Try<Object> result = successTry.onSuccessTry(success -> {
+            assertSame(anyValue, success);
+            wasOnSuccessTryExecuted.set(true);
+            throw error;
+        });
+
+        // then:
+        assertTrue(wasOnSuccessTryExecuted.get());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
+    }
+
+    @Test
+    public void onSuccessTry_tryShouldNotBeAffectedIfConsumerDoesNotThrow() {
+        // given:
+        AtomicBoolean wasOnSuccessTryExecuted = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.onSuccessTry(success -> {
+            assertSame(anyValue, success);
+            wasOnSuccessTryExecuted.set(true);
+        });
+
+        // then:
+        assertTrue(wasOnSuccessTryExecuted.get());
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void onSuccessTry_shouldNotThrowOrAffectTryForErrorTryIfCheckedConsumerThrows() {
+        // given:
+        AtomicBoolean wasOnSuccessTryExecuted = new AtomicBoolean(false);
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        Throwable consumerError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.onSuccessTry(success -> {
+            wasOnSuccessTryExecuted.set(true);
+            throw consumerError;
+        });
+
+        // then:
+        assertFalse(wasOnSuccessTryExecuted.get());
+        assertTrue(result.isError());
+        assertSame(error, result.getError());
+    }
+
     @Test
     public void onError_shouldNotBeCalledForASuccessTry() {
         // given:
@@ -239,6 +385,26 @@ public class TryTest {
 
         // then:
         assertTrue(executedOnError.get());
+    }
+
+    @Test(expected = TestSuccessException.class)
+    public void onError_shouldThrowForErrorTryIfConsumerThrows() {
+        // given:
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onError(TestSuccessException::throwIt);
+    }
+
+    @Test
+    public void onError_shouldNotThrowForSuccessTryIfConsumerThrows() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // then:
+        successTry.onError(TestSuccessException::throwIt);
     }
 
     @Test

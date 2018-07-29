@@ -86,4 +86,31 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         return TryPrototype.super.onError(errorClass, errorConsumer);
     }
 
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onSuccessTryConsumer(@NotNull Consumer<SuccessType> consumer) {
+        return TryPrototype.super.onSuccessTryConsumer(consumer);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onSuccessTryRunnable(@NotNull Runnable runnable) {
+        return TryPrototype.super.onSuccessTryRunnable(runnable);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onSuccessTryRun(@NotNull CheckedRunnable runnable) {
+        return TryPrototype.super.onSuccessTryRun(runnable);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onSuccessTry(@NotNull CheckedConsumer<SuccessType, ? extends Throwable> consumer) {
+        return TryPrototype.super.onSuccessTry(consumer);
+    }
 }
