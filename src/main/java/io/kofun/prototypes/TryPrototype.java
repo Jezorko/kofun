@@ -4,13 +4,12 @@ import io.kofun.CheckedConsumer;
 import io.kofun.CheckedRunnable;
 import io.kofun.Iterators;
 import io.kofun.exception.ErrorNotPresentException;
+import io.kofun.exception.PredicateNotMatchingException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -208,6 +207,36 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         }
         else {
             return recreateError(new ErrorNotPresentException());
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType filter(@NotNull Predicate<SuccessType> predicate) {
+        return filterMap(predicate, PredicateNotMatchingException::new);
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType filterGet(@NotNull Predicate<SuccessType> predicate, @NotNull Supplier<? extends ErrorType> errorSupplier) {
+        return filterMap(predicate, success -> errorSupplier.get());
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType filterMap(@NotNull Predicate<SuccessType> predicate,
+                                                               @NotNull Function<? super SuccessType, ? extends ErrorType> errorMapper) {
+        if (isError()) {
+            return retype();
+        }
+        else if (isSuccess() && predicate.test(getSuccess())) {
+            return retype();
+        }
+        else {
+            return recreateError(errorMapper.apply(getSuccess()));
         }
     }
 

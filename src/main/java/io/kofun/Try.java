@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
@@ -176,5 +178,27 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @SuppressWarnings("unchecked")
     default <ErrorType extends Throwable> Try<ErrorType> switchWithError() {
         return TryPrototype.super.switchWithError();
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> filter(@NotNull Predicate<SuccessType> predicate) {
+        return TryPrototype.super.filter(predicate);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> filterGet(@NotNull Predicate<SuccessType> predicate, @NotNull Supplier<? extends ErrorType> errorSupplier) {
+        return TryPrototype.super.filterGet(predicate, errorSupplier);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> filterMap(@NotNull Predicate<SuccessType> predicate,
+                                                                     @NotNull Function<? super SuccessType, ? extends ErrorType> errorMapper) {
+        return TryPrototype.super.filterMap(predicate, errorMapper);
     }
 }

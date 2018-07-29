@@ -1,12 +1,14 @@
 package io.kofun;
 
 import io.kofun.exception.ErrorNotPresentException;
+import io.kofun.exception.PredicateNotMatchingException;
 import io.kofun.prototypes.TryPrototype;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.kofun.ExtensibleFluentChainTestUtil.prototypeImplementation;
@@ -853,6 +855,137 @@ public class TryTest {
         // then:
         assertTrue(result.isError());
         assertTrue(result.getError() instanceof ErrorNotPresentException);
+    }
+
+    @Test
+    public void filter_shouldReturnTheSameTryIfTryIsSuccessAndPredicateMatches() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filter(anyValue::equals);
+
+        // then:
+        assertSame(successTry, result);
+    }
+
+    @Test
+    public void filter_shouldReturnErrorTryIfTryIsSuccessAndPredicateDoesNotMatch() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filter(Objects::isNull);
+
+        // then:
+        assertNotSame(result, successTry);
+        assertTrue(result.isError());
+        assertTrue(result.getError() instanceof PredicateNotMatchingException);
+    }
+
+    @Test
+    public void filter_shouldReturnTheSameTryIfTryIsError() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        // when:
+        Try<Object> result = errorTry.filter(Objects::nonNull);
+
+        // then:
+        assertSame(errorTry, result);
+    }
+
+    @Test
+    public void filterGet_shouldReturnTheSameTryIfTryIsSuccessAndPredicateMatches() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filterGet(anyValue::equals, Throwable::new);
+
+        // then:
+        assertSame(successTry, result);
+    }
+
+    @Test
+    public void filterGet_shouldReturnANewErrorTryWithProvidedExceptionIfPredicateDoesNotMatch() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = successTry.filterGet(Objects::isNull, () -> anyError);
+
+        // then:
+        assertNotSame(result, successTry);
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterGet_shouldReturnTheSameTryIfTryIsError() {
+        // given:
+        final Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.filterGet(Objects::nonNull, Throwable::new);
+
+        // then:
+        assertSame(errorTry, result);
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterMap_shouldReturnTheSameTryIfTryIsSuccessAndPredicateMatches() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filterMap(anyValue::equals, success -> new Throwable());
+
+        // then:
+        assertSame(successTry, result);
+    }
+
+    @Test
+    public void filterMap_shouldReturnANewErrorTryWithProvidedExceptionIfPredicateDoesNotMatch() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = successTry.filterMap(Objects::isNull, success -> {
+            assertSame(anyValue, success);
+            return anyError;
+        });
+
+        // then:
+        assertNotSame(result, successTry);
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterMap_shouldReturnTheSameTryIfTryIsError() {
+        // given:
+        final Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.filterMap(Objects::nonNull, success -> new Throwable());
+
+        // then:
+        assertSame(errorTry, result);
+        assertSame(anyError, result.getError());
     }
 
 }
