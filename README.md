@@ -5,6 +5,10 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/f1ec4528ddab4eccb759/maintainability)](https://codeclimate.com/github/Jezorko/kofun/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f1ec4528ddab4eccb759/test_coverage)](https://codeclimate.com/github/Jezorko/kofun/test_coverage)
 
+## Implementation progress
+
+[![Implementation progress](https://docs.google.com/spreadsheets/d/e/2PACX-1vSerK7xz_n-Nz67OtpLhm0ea4Kdi6v77lkq3Twu1dPwc9d8PoDB6kLklFZqRu3qATL9s65tNVzCmrQh/pubchart?oid=164078757&format=image)](https://docs.google.com/spreadsheets/d/1hhDRsxyS6Aqb-4e1aFYqDN4i_Zc7SuW3QgC2R1X25yM/edit?usp=sharing)
+
 ## What is this?
 
 This is an attempt at making an extensible, packed with features and neatly documented functional Java library.
