@@ -2,7 +2,7 @@ package io.kofun;
 
 class TestSuccessException extends RuntimeException {
 
-    static TestSuccessException throwIt(Object... anyArgs) {
+    static <AnyReturnType> AnyReturnType throwIt(Object... anyArgs) {
         throw new TestSuccessException();
     }
 

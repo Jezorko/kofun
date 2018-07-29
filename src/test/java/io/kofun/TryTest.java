@@ -988,4 +988,215 @@ public class TryTest {
         assertSame(anyError, result.getError());
     }
 
+    @Test
+    public void filterTry_shouldReturnTheSameTryIfTryIsSuccessAndPredicateMatches() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filterTry(anyValue::equals);
+
+        // then:
+        assertSame(successTry, result);
+    }
+
+    @Test
+    public void filterTry_shouldReturnErrorTryIfTryIsSuccessAndPredicateDoesNotMatch() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filterTry(Objects::isNull);
+
+        // then:
+        assertNotSame(result, successTry);
+        assertTrue(result.isError());
+        assertTrue(result.getError() instanceof PredicateNotMatchingException);
+    }
+
+    @Test
+    public void filterTry_shouldReturnTheSameTryIfTryIsError() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        // when:
+        Try<Object> result = errorTry.filterTry(Objects::nonNull);
+
+        // then:
+        assertSame(errorTry, result);
+    }
+
+    @Test
+    public void filterTry_shouldCatchExceptionThrownByPredicateForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> errorTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.filterTry(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryGet_shouldReturnTheSameTryIfTryIsSuccessAndPredicateMatches() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filterTryGet(anyValue::equals, Throwable::new);
+
+        // then:
+        assertSame(successTry, result);
+    }
+
+    @Test
+    public void filterTryGet_shouldReturnANewErrorTryWithProvidedExceptionIfPredicateDoesNotMatch() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = successTry.filterTryGet(Objects::isNull, () -> anyError);
+
+        // then:
+        assertNotSame(result, successTry);
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryGet_shouldReturnTheSameTryIfTryIsError() {
+        // given:
+        final Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.filterTryGet(Objects::nonNull, Throwable::new);
+
+        // then:
+        assertSame(errorTry, result);
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryGet_shouldCatchExceptionThrownByPredicateForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> errorTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.filterTryGet(ignore -> {throw anyError;}, RuntimeException::new);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryGet_shouldCatchExceptionThrownBySupplierForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> errorTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.filterTryGet(ignore -> false, () -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryMap_shouldReturnTheSameTryIfTryIsSuccessAndPredicateMatches() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.filterTryMap(anyValue::equals, success -> new Throwable());
+
+        // then:
+        assertSame(successTry, result);
+    }
+
+    @Test
+    public void filterTryMap_shouldReturnANewErrorTryWithProvidedExceptionIfPredicateDoesNotMatch() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = successTry.filterTryMap(Objects::isNull, success -> {
+            assertSame(anyValue, success);
+            return anyError;
+        });
+
+        // then:
+        assertNotSame(result, successTry);
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryMap_shouldReturnTheSameTryIfTryIsError() {
+        // given:
+        final Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.filterTryMap(Objects::nonNull, ignore -> new Throwable());
+
+        // then:
+        assertSame(errorTry, result);
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryMap_shouldCatchExceptionThrownByPredicateForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> errorTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.filterTryMap(ignore -> {throw anyError;}, ignore -> new Throwable());
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void filterTryMap_shouldCatchExceptionThrownBySupplierForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> errorTry = Try.success(anyValue);
+
+        Throwable anyError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.filterTryMap(ignore -> false, ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
 }

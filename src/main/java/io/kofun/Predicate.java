@@ -28,7 +28,7 @@ public interface Predicate<T> extends java.util.function.Predicate<T> {
      * @return {@link #ALWAYS_TRUE}
      */
     @SuppressWarnings("unchecked")
-    static <T> Predicate<T> alwaysTrue() {
+    public static <T> Predicate<T> alwaysTrue() {
         return ALWAYS_TRUE;
     }
 
@@ -40,7 +40,7 @@ public interface Predicate<T> extends java.util.function.Predicate<T> {
      * @return {@link #ALWAYS_FALSE}
      */
     @SuppressWarnings("unchecked")
-    static <T> Predicate<T> alwaysFalse() {
+    public static <T> Predicate<T> alwaysFalse() {
         return ALWAYS_FALSE;
     }
 

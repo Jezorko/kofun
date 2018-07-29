@@ -201,4 +201,27 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
                                                                      @NotNull Function<? super SuccessType, ? extends ErrorType> errorMapper) {
         return TryPrototype.super.filterMap(predicate, errorMapper);
     }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> filterTry(@NotNull CheckedPredicate<SuccessType, ? extends Throwable> predicate) {
+        return TryPrototype.super.filterTry(predicate);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> filterTryGet(@NotNull CheckedPredicate<SuccessType, ? extends Throwable> predicate,
+                                                                        @NotNull CheckedSupplier<? extends ErrorType, ? extends Throwable> errorSupplier) {
+        return TryPrototype.super.filterTryGet(predicate, errorSupplier);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> filterTryMap(@NotNull CheckedPredicate<SuccessType, ? extends Throwable> predicate,
+                                                                        @NotNull CheckedFunction<? super SuccessType, ? extends ErrorType, ? extends Throwable> errorMapper) {
+        return TryPrototype.super.filterTryMap(predicate, errorMapper);
+    }
 }
