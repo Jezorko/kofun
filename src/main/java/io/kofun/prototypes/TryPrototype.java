@@ -2,11 +2,19 @@ package io.kofun.prototypes;
 
 import io.kofun.CheckedConsumer;
 import io.kofun.CheckedRunnable;
+import io.kofun.Iterators;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> extends FluentPrototype<NewTryType> {
+public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> extends FluentPrototype<NewTryType>,
+                                                                                    Iterable<SuccessType> {
 
     SuccessType getSuccess();
 
@@ -144,6 +152,27 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
                 errorConsumer.accept(errorClass.cast(error));
             }
         });
+    }
+
+    default <AccumulatorType, CollectionType> CollectionType collect(Collector<? super SuccessType, AccumulatorType, CollectionType> collector) {
+        return stream().collect(collector);
+    }
+
+    default <CollectionType> CollectionType collect(Supplier<CollectionType> collectionSupplier,
+                                                    BiConsumer<CollectionType, ? super SuccessType> valueAdder,
+                                                    BiConsumer<CollectionType, CollectionType> collectionsMerger) {
+        return stream().collect(collectionSupplier, valueAdder, collectionsMerger);
+    }
+
+    @NotNull
+    default Stream<SuccessType> stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
+    @NotNull
+    @Override
+    default Iterator<SuccessType> iterator() {
+        return isSuccess() ? Iterators.singleton(getSuccess()) : Iterators.emptyIterator();
     }
 
 }

@@ -4,10 +4,13 @@ import io.kofun.prototypes.TryPrototype;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.kofun.ExtensibleFluentChainTestUtil.prototypeImplementation;
 import static io.kofun.ExtensibleFluentChainTestUtil.shouldReimplementAllExtensibleFluentChainMethods;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
 public class TryTest {
@@ -739,6 +742,88 @@ public class TryTest {
 
         // then:
         errorTry.onErrorTry(IllegalArgumentException.class, e -> fail());
+    }
+
+    @Test
+    public void collect_shouldReturnANewListForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        List<Object> result = successTry.collect(toList());
+
+        // then:
+        assertEquals(1, result.size());
+        assertSame(anyValue, result.get(0));
+    }
+
+    @Test
+    public void collect_shouldReturnANewEmptyListForErrorTry() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        List<Object> result = errorTry.collect(toList());
+
+        // then:
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void collect_shouldAllowCreationOfMutableCollectionForSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        List<Object> result = successTry.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+        // then:
+        assertEquals(1, result.size());
+        assertSame(anyValue, result.get(0));
+    }
+
+    @Test
+    public void collect_shouldNotAllowCreationOfMutableCollectionForErrorTry() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        List<Object> result = errorTry.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+        // then:
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void iterator_shouldAllowIterationOverSuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+        int iterations = 0;
+
+        // when:
+        for (Object object : successTry) {
+            ++iterations;
+            assertSame(object, anyValue);
+        }
+
+        // then:
+        assertEquals(1, iterations);
+    }
+
+    @Test
+    public void iterator_shouldNowAllowIterationOverErrorTry() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        // when:
+        for (Object ignored : errorTry) {
+            fail();
+        }
     }
 
 }
