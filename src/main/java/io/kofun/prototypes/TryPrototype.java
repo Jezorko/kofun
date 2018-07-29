@@ -60,14 +60,11 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         if (isSuccess()) {
             try {
                 consumer.accept(getSuccess());
-                return retype();
             } catch (Throwable error) {
                 return recreateError(error);
             }
         }
-        else {
-            return retype();
-        }
+        return retype();
     }
 
     @NotNull
@@ -75,6 +72,37 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     default NewTryType onError(@NotNull Consumer<? super Throwable> errorConsumer) {
         if (isError()) {
             errorConsumer.accept(getError());
+        }
+        return retype();
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default NewTryType onErrorTryConsumer(@NotNull Consumer<? super Throwable> errorConsumer) {
+        return onErrorTry(errorConsumer::accept);
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default NewTryType onErrorTryRunnable(@NotNull Runnable runnable) {
+        return onErrorTryRun(runnable::run);
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default NewTryType onErrorTryRun(@NotNull CheckedRunnable runnable) {
+        return onErrorTry(error -> runnable.run());
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default NewTryType onErrorTry(@NotNull CheckedConsumer<? super Throwable, ? extends Throwable> errorConsumer) {
+        if (isError()) {
+            try {
+                errorConsumer.accept(getError());
+            } catch (Throwable error) {
+                return recreateError(error);
+            }
         }
         return retype();
     }

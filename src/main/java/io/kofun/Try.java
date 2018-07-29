@@ -75,20 +75,6 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    default Try<SuccessType> onError(@NotNull Consumer<? super Throwable> errorConsumer) {
-        return TryPrototype.super.onError(errorConsumer);
-    }
-
-    @NotNull
-    @Override
-    @SuppressWarnings("unchecked")
-    default <ErrorType extends Throwable> Try<SuccessType> onError(Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
-        return TryPrototype.super.onError(errorClass, errorConsumer);
-    }
-
-    @NotNull
-    @Override
-    @SuppressWarnings("unchecked")
     default Try<SuccessType> onSuccessTryConsumer(@NotNull Consumer<SuccessType> consumer) {
         return TryPrototype.super.onSuccessTryConsumer(consumer);
     }
@@ -113,4 +99,48 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     default Try<SuccessType> onSuccessTry(@NotNull CheckedConsumer<SuccessType, ? extends Throwable> consumer) {
         return TryPrototype.super.onSuccessTry(consumer);
     }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onError(@NotNull Consumer<? super Throwable> errorConsumer) {
+        return TryPrototype.super.onError(errorConsumer);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onErrorTryConsumer(@NotNull Consumer<? super Throwable> errorConsumer) {
+        return TryPrototype.super.onErrorTryConsumer(errorConsumer);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onErrorTryRunnable(@NotNull Runnable runnable) {
+        return TryPrototype.super.onErrorTryRunnable(runnable);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onErrorTryRun(@NotNull CheckedRunnable runnable) {
+        return TryPrototype.super.onErrorTryRun(runnable);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> onErrorTry(@NotNull CheckedConsumer<? super Throwable, ? extends Throwable> errorConsumer) {
+        return TryPrototype.super.onErrorTry(errorConsumer);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> onError(Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
+        return TryPrototype.super.onError(errorClass, errorConsumer);
+    }
+
+
 }

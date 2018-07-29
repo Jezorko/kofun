@@ -408,6 +408,132 @@ public class TryTest {
     }
 
     @Test
+    public void onErrorTryConsumer_shouldNotThrowForErrorTryIfConsumerThrows() {
+        // given:
+        AtomicBoolean wasOnErrorTryConsumerExecuted = new AtomicBoolean(false);
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        RuntimeException errorThrown = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.onErrorTryConsumer(error -> {
+            assertSame(error, anyError);
+            wasOnErrorTryConsumerExecuted.set(true);
+            throw errorThrown;
+        });
+
+        // then:
+        assertTrue(wasOnErrorTryConsumerExecuted.get());
+        assertTrue(result.isError());
+        assertSame(errorThrown, result.getError());
+    }
+
+    @Test
+    public void onErrorTryRunnable_shouldNotThrowForErrorTryIfRunnableThrows() {
+        // given:
+        AtomicBoolean wasOnErrorTryConsumerExecuted = new AtomicBoolean(false);
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        RuntimeException errorThrown = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.onErrorTryRunnable(() -> {
+            wasOnErrorTryConsumerExecuted.set(true);
+            throw errorThrown;
+        });
+
+        // then:
+        assertTrue(wasOnErrorTryConsumerExecuted.get());
+        assertTrue(result.isError());
+        assertSame(errorThrown, result.getError());
+    }
+
+    @Test
+    public void onErrorTryRun_shouldNotThrowForErrorTryIfCheckedRunnableThrows() {
+        // given:
+        AtomicBoolean wasOnErrorTryConsumerExecuted = new AtomicBoolean(false);
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable errorThrown = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.onErrorTryRun(() -> {
+            wasOnErrorTryConsumerExecuted.set(true);
+            throw errorThrown;
+        });
+
+        // then:
+        assertTrue(wasOnErrorTryConsumerExecuted.get());
+        assertTrue(result.isError());
+        assertSame(errorThrown, result.getError());
+    }
+
+    @Test
+    public void onErrorTry_shouldNotThrowForErrorTryIfCheckedConsumerThrows() {
+        // given:
+        AtomicBoolean wasOnErrorTryConsumerExecuted = new AtomicBoolean(false);
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable errorThrown = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.onErrorTry(error -> {
+            assertSame(anyError, error);
+            wasOnErrorTryConsumerExecuted.set(true);
+            throw errorThrown;
+        });
+
+        // then:
+        assertTrue(wasOnErrorTryConsumerExecuted.get());
+        assertTrue(result.isError());
+        assertSame(errorThrown, result.getError());
+    }
+
+    @Test
+    public void onErrorTry_tryShouldNotBeAffectedIfConsumerDoesNotThrow() {
+        // given:
+        AtomicBoolean wasOnErrorTryConsumerExecuted = new AtomicBoolean(false);
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.onErrorTry(error -> {
+            assertSame(anyError, error);
+            wasOnErrorTryConsumerExecuted.set(true);
+        });
+
+        // then:
+        assertTrue(wasOnErrorTryConsumerExecuted.get());
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void onErrorTry_shouldNotThrowOrAffectTryForSuccessTryIfCheckedConsumerThrows() {
+        // given:
+        AtomicBoolean wasOnErrorTryConsumerExecuted = new AtomicBoolean(false);
+        Object anyValue = new Object();
+        Try<Object> errorTry = Try.success(anyValue);
+
+        Throwable errorThrown = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.onErrorTry(error -> {
+            wasOnErrorTryConsumerExecuted.set(true);
+            throw errorThrown;
+        });
+
+        // then:
+        assertFalse(wasOnErrorTryConsumerExecuted.get());
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
     public void onError_shouldBeCalledForTheSameExceptionClass() {
         // given:
         AtomicBoolean executedOnError = new AtomicBoolean(false);
