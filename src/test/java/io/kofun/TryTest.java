@@ -1,5 +1,6 @@
 package io.kofun;
 
+import io.kofun.exception.ErrorNotPresentException;
 import io.kofun.prototypes.TryPrototype;
 import org.junit.Assert;
 import org.junit.Test;
@@ -824,6 +825,34 @@ public class TryTest {
         for (Object ignored : errorTry) {
             fail();
         }
+    }
+
+    @Test
+    public void switchWithError_shouldCreateANewSuccessTryFromAnErrorTry() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        final Try<Throwable> result = errorTry.switchWithError();
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyError, result.getSuccess());
+    }
+
+    @Test
+    public void switchWithError_shouldCreateANewErrorTryFromASuccessTry() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        final Try<Throwable> result = successTry.switchWithError();
+
+        // then:
+        assertTrue(result.isError());
+        assertTrue(result.getError() instanceof ErrorNotPresentException);
     }
 
 }

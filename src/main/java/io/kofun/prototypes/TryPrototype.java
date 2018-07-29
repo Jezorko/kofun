@@ -3,6 +3,7 @@ package io.kofun.prototypes;
 import io.kofun.CheckedConsumer;
 import io.kofun.CheckedRunnable;
 import io.kofun.Iterators;
+import io.kofun.exception.ErrorNotPresentException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -196,6 +197,18 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @Override
     default Iterator<SuccessType> iterator() {
         return isSuccess() ? Iterators.singleton(getSuccess()) : Iterators.emptyIterator();
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "-> new", pure = true)
+    default <ErrorType extends Throwable> NewTryType switchWithError() {
+        if (isError()) {
+            return recreateSuccess(getError());
+        }
+        else {
+            return recreateError(new ErrorNotPresentException());
+        }
     }
 
 }

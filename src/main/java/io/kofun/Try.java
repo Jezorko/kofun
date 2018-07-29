@@ -171,4 +171,10 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         return TryPrototype.super.onErrorTry(errorClass, errorConsumer);
     }
 
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<ErrorType> switchWithError() {
+        return TryPrototype.super.switchWithError();
+    }
 }
