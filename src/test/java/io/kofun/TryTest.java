@@ -577,4 +577,168 @@ public class TryTest {
         errorTry.onError(IllegalArgumentException.class, e -> fail());
     }
 
+    @Test
+    public void onErrorTryConsumer_shouldBeCalledForTheSameExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTryConsumer(IllegalArgumentException.class, e -> {
+            executedOnError.set(true);
+            assertSame(error, e);
+        });
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTryConsumer_shouldBeCalledForParentExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTryConsumer(Throwable.class, e -> {
+            executedOnError.set(true);
+            assertSame(error, e);
+        });
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTryConsumer_shouldNotBeCalledForChildExceptionClass() {
+        // given:
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onErrorTryConsumer(IllegalArgumentException.class, e -> fail());
+    }
+
+    @Test
+    public void onErrorTryRunnable_shouldBeCalledForTheSameExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTryRunnable(IllegalArgumentException.class, () -> executedOnError.set(true));
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTryRunnable_shouldBeCalledForParentExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTryRunnable(Throwable.class, () -> executedOnError.set(true));
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTryRunnable_shouldNotBeCalledForChildExceptionClass() {
+        // given:
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onErrorTryRunnable(IllegalArgumentException.class, () -> fail());
+    }
+
+    @Test
+    public void onErrorTryRun_shouldBeCalledForTheSameExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTryRun(IllegalArgumentException.class, () -> executedOnError.set(true));
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTryRun_shouldBeCalledForParentExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTryRun(Throwable.class, () -> executedOnError.set(true));
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTryRun_shouldNotBeCalledForChildExceptionClass() {
+        // given:
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onErrorTryRun(IllegalArgumentException.class, () -> fail());
+    }
+
+    @Test
+    public void onErrorTry_shouldBeCalledForTheSameExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTry(IllegalArgumentException.class, e -> {
+            executedOnError.set(true);
+            assertSame(error, e);
+        });
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTry_shouldBeCalledForParentExceptionClass() {
+        // given:
+        AtomicBoolean executedOnError = new AtomicBoolean(false);
+        Throwable error = new IllegalArgumentException();
+        Try<Object> errorTry = Try.error(error);
+
+        // when:
+        errorTry.onErrorTry(Throwable.class, e -> {
+            executedOnError.set(true);
+            assertSame(error, e);
+        });
+
+        // then:
+        assertTrue(executedOnError.get());
+    }
+
+    @Test
+    public void onErrorTry_shouldNotBeCalledForChildExceptionClass() {
+        // given:
+        Throwable error = new Throwable();
+        Try<Object> errorTry = Try.error(error);
+
+        // then:
+        errorTry.onErrorTry(IllegalArgumentException.class, e -> fail());
+    }
+
 }

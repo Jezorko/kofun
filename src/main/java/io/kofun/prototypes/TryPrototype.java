@@ -110,10 +110,40 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     default <ErrorType extends Throwable> NewTryType onError(Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
-        if (isError() && errorClass.isAssignableFrom(getError().getClass())) {
-            errorConsumer.accept(errorClass.cast(getError()));
-        }
-        return retype();
+        return onError(error -> {
+            if (errorClass.isAssignableFrom(error.getClass())) {
+                errorConsumer.accept(errorClass.cast(error));
+            }
+        });
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default <ErrorType extends Throwable> NewTryType onErrorTryConsumer(@NotNull Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
+        return onErrorTry(errorClass, errorConsumer::accept);
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default <ErrorType extends Throwable> NewTryType onErrorTryRunnable(@NotNull Class<ErrorType> errorClass, @NotNull Runnable runnable) {
+        return onErrorTryRun(errorClass, runnable::run);
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default <ErrorType extends Throwable> NewTryType onErrorTryRun(@NotNull Class<ErrorType> errorClass, @NotNull CheckedRunnable runnable) {
+        return onErrorTry(errorClass, error -> runnable.run());
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    default <ErrorType extends Throwable> NewTryType onErrorTry(@NotNull Class<ErrorType> errorClass,
+                                                                @NotNull CheckedConsumer<? super ErrorType, ? extends Throwable> errorConsumer) {
+        return onErrorTry(error -> {
+            if (errorClass.isAssignableFrom(error.getClass())) {
+                errorConsumer.accept(errorClass.cast(error));
+            }
+        });
     }
 
 }
