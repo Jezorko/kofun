@@ -1937,7 +1937,7 @@ public class TryTest {
         Try<Object> successTry = Try.success(anyValue);
 
         // when:
-        Try<Object> result = successTry.orElse(() -> Try.error(new Throwable()));
+        Try<Object> result = successTry.orElse(Try.errors(new Throwable()));
 
         // then:
         assertTrue(result.isSuccess());
@@ -1951,10 +1951,9 @@ public class TryTest {
         Try<Object> successTry = Try.error(anyError);
 
         Object alternativeValue = new Object();
-        Try<Object> alternativeTry = Try.success(alternativeValue);
 
         // when:
-        Try<Object> result = successTry.orElse(() -> alternativeTry);
+        Try<Object> result = successTry.orElse(Try.successes(alternativeValue));
 
         // then:
         assertTrue(result.isSuccess());
@@ -1968,10 +1967,9 @@ public class TryTest {
         Try<Object> successTry = Try.error(anyError);
 
         Throwable alternativeError = new Throwable();
-        Try<Object> alternativeTry = Try.error(alternativeError);
 
         // when:
-        Try<Object> result = successTry.orElse(() -> alternativeTry);
+        Try<Object> result = successTry.orElse(Try.errors(alternativeError));
 
         // then:
         assertTrue(result.isError());
@@ -1985,7 +1983,7 @@ public class TryTest {
         Try<Object> successTry = Try.error(anyError);
 
         // expect:
-        Try<Object> result = successTry.orElse(() -> null);
+        successTry.orElse(() -> null);
     }
 
 }

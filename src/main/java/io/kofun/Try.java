@@ -54,6 +54,18 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     }
 
     @NotNull
+    static <SuccessType> Supplier<Try<SuccessType>> successes(SuccessType success) {
+        Try<SuccessType> result = success(success);
+        return () -> result;
+    }
+
+    @NotNull
+    static <SuccessType> Supplier<Try<SuccessType>> errors(Throwable error) {
+        Try<SuccessType> result = error(error);
+        return () -> result;
+    }
+
+    @NotNull
     @Override
     default <AnySuccessType> Try<AnySuccessType> recreateSuccess(AnySuccessType success) {
         return success(success);
