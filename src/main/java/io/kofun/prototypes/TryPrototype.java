@@ -1,14 +1,22 @@
 package io.kofun.prototypes;
 
-import io.kofun.*;
+import io.kofun.CheckedConsumer;
+import io.kofun.CheckedFunction;
+import io.kofun.CheckedPredicate;
+import io.kofun.CheckedRunnable;
+import io.kofun.CheckedSupplier;
+import io.kofun.Iterators;
 import io.kofun.exception.ErrorNotPresentException;
 import io.kofun.exception.PredicateNotMatchingException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -212,21 +220,21 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null -> fail", pure = true)
-    default NewTryType filter(@NotNull Predicate<SuccessType> predicate) {
+    default NewTryType filter(@NotNull Predicate<? super SuccessType> predicate) {
         return filterMap(predicate, PredicateNotMatchingException::new);
     }
 
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null, null -> fail", pure = true)
-    default <ErrorType extends Throwable> NewTryType filterGet(@NotNull Predicate<SuccessType> predicate, @NotNull Supplier<? extends ErrorType> errorSupplier) {
+    default <ErrorType extends Throwable> NewTryType filterGet(@NotNull Predicate<? super SuccessType> predicate, @NotNull Supplier<? extends ErrorType> errorSupplier) {
         return filterMap(predicate, success -> errorSupplier.get());
     }
 
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null, null -> fail", pure = true)
-    default <ErrorType extends Throwable> NewTryType filterMap(@NotNull Predicate<SuccessType> predicate,
+    default <ErrorType extends Throwable> NewTryType filterMap(@NotNull Predicate<? super SuccessType> predicate,
                                                                @NotNull Function<? super SuccessType, ? extends ErrorType> errorMapper) {
         if (isError()) {
             return retype();
@@ -242,14 +250,14 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null -> fail", pure = true)
-    default NewTryType filterTry(@NotNull CheckedPredicate<SuccessType, ? extends Throwable> predicate) {
+    default NewTryType filterTry(@NotNull CheckedPredicate<? super SuccessType, ? extends Throwable> predicate) {
         return filterTryMap(predicate, PredicateNotMatchingException::new);
     }
 
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null, null -> fail", pure = true)
-    default <ErrorType extends Throwable> NewTryType filterTryGet(@NotNull CheckedPredicate<SuccessType, ? extends Throwable> predicate,
+    default <ErrorType extends Throwable> NewTryType filterTryGet(@NotNull CheckedPredicate<? super SuccessType, ? extends Throwable> predicate,
                                                                   @NotNull CheckedSupplier<? extends ErrorType, ? extends Throwable> errorSupplier) {
         return filterTryMap(predicate, success -> errorSupplier.get());
     }
@@ -257,7 +265,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null, null -> fail", pure = true)
-    default <ErrorType extends Throwable> NewTryType filterTryMap(@NotNull CheckedPredicate<SuccessType, ? extends Throwable> predicate,
+    default <ErrorType extends Throwable> NewTryType filterTryMap(@NotNull CheckedPredicate<? super SuccessType, ? extends Throwable> predicate,
                                                                   @NotNull CheckedFunction<? super SuccessType, ? extends ErrorType, ? extends Throwable> errorMapper) {
         if (isError()) {
             return retype();
@@ -271,6 +279,32 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
             }
         } catch (Throwable throwable) {
             return recreateError(throwable);
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <NewSuccessType> NewTryType map(@NotNull Function<? super SuccessType, ? extends NewSuccessType> mappingFunction) {
+        if (isSuccess()) {
+            NewSuccessType newSuccess = mappingFunction.apply(getSuccess());
+            return recreateSuccess(newSuccess);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <NewErrorType extends Throwable> NewTryType mapError(@NotNull Function<? super Throwable, ? extends NewErrorType> mappingFunction) {
+        if (isError()) {
+            NewErrorType newError = mappingFunction.apply(getError());
+            return recreateError(newError);
+        }
+        else {
+            return retype();
         }
     }
 

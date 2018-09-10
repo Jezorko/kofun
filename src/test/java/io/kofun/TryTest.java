@@ -14,7 +14,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static io.kofun.ExtensibleFluentChainTestUtil.prototypeImplementation;
 import static io.kofun.ExtensibleFluentChainTestUtil.shouldReimplementAllExtensibleFluentChainMethods;
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TryTest {
 
@@ -1171,12 +1176,12 @@ public class TryTest {
     public void filterTryMap_shouldCatchExceptionThrownByPredicateForSuccessTry() {
         // given:
         Object anyValue = new Object();
-        Try<Object> errorTry = Try.success(anyValue);
+        Try<Object> successTry = Try.success(anyValue);
 
         Throwable anyError = new Throwable();
 
         // when:
-        Try<Object> result = errorTry.filterTryMap(ignore -> {throw anyError;}, ignore -> new Throwable());
+        Try<Object> result = successTry.filterTryMap(ignore -> {throw anyError;}, ignore -> new Throwable());
 
         // then:
         assertTrue(result.isError());
@@ -1187,16 +1192,134 @@ public class TryTest {
     public void filterTryMap_shouldCatchExceptionThrownBySupplierForSuccessTry() {
         // given:
         Object anyValue = new Object();
-        Try<Object> errorTry = Try.success(anyValue);
+        Try<Object> successTry = Try.success(anyValue);
 
         Throwable anyError = new Throwable();
 
         // when:
-        Try<Object> result = errorTry.filterTryMap(ignore -> false, ignore -> {throw anyError;});
+        Try<Object> result = successTry.filterTryMap(ignore -> false, ignore -> {throw anyError;});
 
         // then:
         assertTrue(result.isError());
         assertSame(anyError, result.getError());
+    }
+
+    @Test(expected = TestSuccessException.class)
+    public void map_shouldThrowIfMapperThrowsAndWasSuccessBefore() {
+        // given:
+        Try<Object> successTry = Try.success(new Object());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // expect:
+        successTry.map(ignore -> {throw anyError;});
+    }
+
+    @Test
+    public void map_shouldNotThrowIfMapperThrowsButWasErrorBefore() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        RuntimeException thrownError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.map(ignore -> {throw thrownError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void map_shouldMapToNewSuccessIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object newValue = new Object();
+
+        // when:
+        Try<Object> result = successTry.map(ignore -> newValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(newValue, result.getSuccess());
+    }
+
+    @Test
+    public void map_shouldReturnItselfIfWasErrorBefore() {
+        // given:
+        TestSuccessException anyError = new TestSuccessException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object newValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.map(ignore -> newValue);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), anyError);
+    }
+
+    @Test(expected = TestSuccessException.class)
+    public void mapError_shouldThrowIfMapperThrowsAndWasErrorBefore() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // expect:
+        errorTry.mapError(ignore -> {throw anyError;});
+    }
+
+    @Test
+    public void mapError_shouldNotThrowIfMapperThrowsButWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = successTry.mapError(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
+    @Test
+    public void mapError_shouldMapToNewErrorIfWasErrorBefore() {
+        // given:
+        Throwable anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.mapError(ignore -> newError);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(newError, result.getError());
+    }
+
+    @Test
+    public void mapError_shouldReturnItselfIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = successTry.mapError(ignore -> newError);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
     }
 
 }
