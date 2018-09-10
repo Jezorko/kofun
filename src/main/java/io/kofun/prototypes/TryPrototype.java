@@ -146,7 +146,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @Contract("_, _ -> this")
     default <ErrorType extends Throwable> NewTryType onError(Class<ErrorType> errorClass, @NotNull Consumer<? super ErrorType> errorConsumer) {
         return onError(error -> {
-            if (errorClass.isAssignableFrom(error.getClass())) {
+            if (isErrorTypeOf(errorClass)) {
                 errorConsumer.accept(errorClass.cast(error));
             }
         });
@@ -178,7 +178,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     default <ErrorType extends Throwable> NewTryType onErrorTry(@NotNull Class<ErrorType> errorClass,
                                                                 @NotNull CheckedConsumer<? super ErrorType, ? extends Throwable> errorConsumer) {
         return onErrorTry(error -> {
-            if (errorClass.isAssignableFrom(error.getClass())) {
+            if (isErrorTypeOf(errorClass)) {
                 errorConsumer.accept(errorClass.cast(error));
             }
         });
@@ -306,6 +306,25 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         else {
             return retype();
         }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail", pure = true)
+    default <NewErrorType extends Throwable> NewTryType mapError(Class<? extends Throwable> errorClass,
+                                                                 @NotNull Function<? super Throwable, ? extends NewErrorType> mappingFunction) {
+        return mapError(error -> {
+            if (isErrorTypeOf(errorClass)) {
+                return mappingFunction.apply(error);
+            }
+            else {
+                return error;
+            }
+        });
+    }
+
+    default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {
+        return errorClass.isAssignableFrom(getError().getClass());
     }
 
 }
