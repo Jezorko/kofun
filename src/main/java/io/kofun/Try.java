@@ -324,4 +324,18 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         return TryPrototype.super.flatMapTryError(errorClass, mappingFunction);
     }
 
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <OtherTry extends TryPrototype<SuccessType, ?>> Try<SuccessType> or(@NotNull OtherTry other) {
+        return TryPrototype.super.or(other);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <OtherTry extends TryPrototype<SuccessType, ?>> Try<SuccessType> orElse(@NotNull Supplier<? extends OtherTry> otherSupplier) {
+        return TryPrototype.super.orElse(otherSupplier);
+    }
+
 }

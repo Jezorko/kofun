@@ -479,6 +479,32 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         }
     }
 
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <OtherTry extends TryPrototype<SuccessType, ?>> NewTryType or(@NotNull OtherTry other) {
+        if (isError()) {
+            return recreateOther(other);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <OtherTry extends TryPrototype<SuccessType, ?>> NewTryType orElse(@NotNull Supplier<? extends OtherTry> otherSupplier) {
+        if (isError()) {
+            OtherTry other = otherSupplier.get();
+            Objects.requireNonNull(other, "Try alternative supplier result is a null object");
+            return recreateOther(other);
+        }
+        else {
+            return retype();
+        }
+    }
+
     default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {
         return errorClass.isAssignableFrom(getError().getClass());
     }

@@ -1882,4 +1882,110 @@ public class TryTest {
         errorTry.flatMapTryError(Throwable.class, ignore -> null);
     }
 
+    @Test
+    public void or_shouldReturnSameTryIfWasSuccess() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.or(Try.error(new Throwable()));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void or_shouldReturnAlternativeTryIfError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> successTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+        Try<Object> alternativeTry = Try.success(alternativeValue);
+
+        // when:
+        Try<Object> result = successTry.or(alternativeTry);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
+    public void or_shouldReturnAlternativeErrorTryIfError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> successTry = Try.error(anyError);
+
+        Throwable alternativeError = new Throwable();
+        Try<Object> alternativeTry = Try.error(alternativeError);
+
+        // when:
+        Try<Object> result = successTry.or(alternativeTry);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(alternativeError, result.getError());
+    }
+
+    @Test
+    public void orElse_shouldReturnSameTryIfWasSuccess() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.orElse(() -> Try.error(new Throwable()));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void orElse_shouldReturnAlternativeTryIfError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> successTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+        Try<Object> alternativeTry = Try.success(alternativeValue);
+
+        // when:
+        Try<Object> result = successTry.orElse(() -> alternativeTry);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
+    public void orElse_shouldReturnAlternativeErrorTryIfError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> successTry = Try.error(anyError);
+
+        Throwable alternativeError = new Throwable();
+        Try<Object> alternativeTry = Try.error(alternativeError);
+
+        // when:
+        Try<Object> result = successTry.orElse(() -> alternativeTry);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(alternativeError, result.getError());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void orElse_shouldThrowIfSupplierResultIsNull() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> successTry = Try.error(anyError);
+
+        // expect:
+        Try<Object> result = successTry.orElse(() -> null);
+    }
+
 }
