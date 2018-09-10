@@ -1,6 +1,7 @@
 package io.kofun;
 
 import io.kofun.prototypes.TryPrototype;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Callable;
@@ -11,22 +12,28 @@ import java.util.function.Supplier;
 
 public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
 
+    Try<?> EMPTY_SUCCESS = new SuccessTry<>(null);
+
     @NotNull
+    @Contract(value = "null -> fail", pure = true)
     static <SuccessType> Try<SuccessType> trySupplier(@NotNull Supplier<SuccessType> supplier) {
         return tryOf(supplier::get);
     }
 
     @NotNull
+    @Contract(value = "null -> fail", pure = true)
     static <SuccessType> Try<SuccessType> tryCallable(@NotNull Callable<SuccessType> callable) {
         return tryOf(callable::call);
     }
 
     @NotNull
+    @Contract(value = "null -> fail", pure = true)
     static Try<Void> tryRunnable(@NotNull Runnable runnable) {
         return tryRun(runnable::run);
     }
 
     @NotNull
+    @Contract(value = "null -> fail", pure = true)
     static Try<Void> tryRun(@NotNull CheckedRunnable runnable) {
         return tryOf(() -> {
             runnable.run();
@@ -35,21 +42,31 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     }
 
     @NotNull
+    @Contract(value = "null -> fail", pure = true)
     static <SuccessType> Try<SuccessType> tryOf(@NotNull CheckedSupplier<SuccessType, ? extends Throwable> supplier) {
         try {
-            return new SuccessTry<>(supplier.get());
+            return success(supplier.get());
         } catch (Throwable error) {
-            return new ErrorTry<>(error);
+            return error(error);
         }
     }
 
     @NotNull
-    static <SuccessType> Try<SuccessType> success(SuccessType success) {
-        return new SuccessTry<>(success);
+    @SuppressWarnings("unchecked")
+    @Contract(value = "-> !null", pure = true)
+    static <SuccessType> Try<SuccessType> emptySuccess() {
+        return (Try<SuccessType>) EMPTY_SUCCESS;
     }
 
     @NotNull
-    static <SuccessType> Try<SuccessType> error(Throwable error) {
+    @Contract(value = "null -> !null; !null -> new", pure = true)
+    static <SuccessType> Try<SuccessType> success(SuccessType success) {
+        return success == null ? emptySuccess() : new SuccessTry<>(success);
+    }
+
+    @NotNull
+    @Contract(value = "null -> fail; !null -> new", pure = true)
+    static <SuccessType> Try<SuccessType> error(@NotNull Throwable error) {
         return new ErrorTry<>(error);
     }
 
@@ -331,7 +348,7 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    default <ErrorType extends Throwable> Try<SuccessType> flatMapTryError(Class<? extends Throwable> errorClass,
+    default <ErrorType extends Throwable> Try<SuccessType> flatMapTryError(@NotNull Class<? extends Throwable> errorClass,
                                                                            @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType, ?>, ErrorType> mappingFunction) {
         return TryPrototype.super.flatMapTryError(errorClass, mappingFunction);
     }
@@ -360,8 +377,36 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> recover(@NotNull Class<ErrorType> errorClass, SuccessType other) {
+        return TryPrototype.super.recover(errorClass, other);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
     default Try<SuccessType> recoverGet(@NotNull Supplier<SuccessType> otherSupplier) {
         return TryPrototype.super.recoverGet(otherSupplier);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> recoverGet(@NotNull Class<ErrorType> errorClass, @NotNull Supplier<SuccessType> otherSupplier) {
+        return TryPrototype.super.recoverGet(errorClass, otherSupplier);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> recoverMap(@NotNull Function<? super Throwable, SuccessType> mappingFunction) {
+        return TryPrototype.super.recoverMap(mappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> recoverMap(@NotNull Class<ErrorType> errorClass, @NotNull Function<ErrorType, SuccessType> mappingFunction) {
+        return TryPrototype.super.recoverMap(errorClass, mappingFunction);
     }
 
 }

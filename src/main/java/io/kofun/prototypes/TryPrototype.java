@@ -46,10 +46,12 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     }
 
     @NotNull
+    @Contract("_ -> !null")
     @ExtensibleFluentChain
     <AnySuccessType> NewTryType recreateSuccess(AnySuccessType success);
 
     @NotNull
+    @Contract("_ -> !null")
     @ExtensibleFluentChain
     <AnySuccessType> NewTryType recreateError(Throwable error);
 
@@ -167,6 +169,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
+    @Contract("_, _ -> this")
     default <ErrorType extends Throwable> NewTryType onErrorTryRunnable(@NotNull Class<ErrorType> errorClass, @NotNull Runnable runnable) {
         return onErrorTryRun(errorClass, runnable::run);
     }
@@ -232,14 +235,14 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default <ErrorType extends Throwable> NewTryType filterGet(@NotNull Predicate<? super SuccessType> predicate, @NotNull Supplier<? extends ErrorType> errorSupplier) {
         return filterMap(predicate, success -> errorSupplier.get());
     }
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default <ErrorType extends Throwable> NewTryType filterMap(@NotNull Predicate<? super SuccessType> predicate,
                                                                @NotNull Function<? super SuccessType, ? extends ErrorType> errorMapper) {
         if (isError()) {
@@ -262,7 +265,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default <ErrorType extends Throwable> NewTryType filterTryGet(@NotNull CheckedPredicate<? super SuccessType, ? extends Throwable> predicate,
                                                                   @NotNull CheckedSupplier<? extends ErrorType, ? extends Throwable> errorSupplier) {
         return filterTryMap(predicate, success -> errorSupplier.get());
@@ -270,7 +273,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default <ErrorType extends Throwable> NewTryType filterTryMap(@NotNull CheckedPredicate<? super SuccessType, ? extends Throwable> predicate,
                                                                   @NotNull CheckedFunction<? super SuccessType, ? extends ErrorType, ? extends Throwable> errorMapper) {
         if (isError()) {
@@ -316,7 +319,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default <NewErrorType extends Throwable> NewTryType mapError(Class<? extends Throwable> errorClass,
                                                                  @NotNull Function<? super Throwable, ? extends NewErrorType> mappingFunction) {
         return mapError(error -> {
@@ -366,7 +369,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default <NewErrorType extends Throwable, ErrorType extends Throwable> NewTryType mapTryError(Class<? extends Throwable> errorClass,
                                                                                                  @NotNull CheckedFunction<? super Throwable, ? extends NewErrorType, ErrorType> mappingFunction) {
         return mapTryError(error -> {
@@ -378,8 +381,6 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
             }
         });
     }
-
-    // TODO: remove separator -----------------
 
     @NotNull
     @ExtensibleFluentChain
@@ -411,7 +412,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
     default NewTryType flatMapError(Class<? extends Throwable> errorClass, @NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> mappingFunction) {
         return flatMapError(error -> blaFlatMap(errorClass, mappingFunction::apply, error));
     }
@@ -458,8 +459,8 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
-    @Contract(value = "null, null -> fail", pure = true)
-    default <ErrorType extends Throwable> NewTryType flatMapTryError(Class<? extends Throwable> errorClass,
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType flatMapTryError(@NotNull Class<? extends Throwable> errorClass,
                                                                      @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType, ?>, ErrorType> mappingFunction) {
         return flatMapTryError(error -> blaFlatMap(errorClass, mappingFunction, error));
     }
@@ -492,8 +493,8 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     }
 
     @NotNull
+    @Contract(pure = true)
     @ExtensibleFluentChain
-    @Contract(value = "null -> fail", pure = true)
     default <OtherTry extends TryPrototype<SuccessType, ?>> NewTryType orElse(@NotNull Supplier<? extends OtherTry> otherSupplier) {
         if (isError()) {
             OtherTry other = otherSupplier.get();
@@ -506,9 +507,22 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     }
 
     @NotNull
+    @Contract(pure = true)
     @ExtensibleFluentChain
     default NewTryType recover(SuccessType other) {
         if (isError()) {
+            return recreateSuccess(other);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType recover(@NotNull Class<ErrorType> errorClass, SuccessType other) {
+        if (isError() && isErrorTypeOf(errorClass)) {
             return recreateSuccess(other);
         }
         else {
@@ -522,6 +536,42 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     default NewTryType recoverGet(@NotNull Supplier<SuccessType> otherSupplier) {
         if (isError()) {
             return recreateSuccess(otherSupplier.get());
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType recoverGet(@NotNull Class<ErrorType> errorClass, @NotNull Supplier<SuccessType> otherSupplier) {
+        if (isError() && isErrorTypeOf(errorClass)) {
+            return recreateSuccess(otherSupplier.get());
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType recoverMap(@NotNull Function<? super Throwable, SuccessType> mappingFunction) {
+        if (isError()) {
+            return recreateSuccess(mappingFunction.apply(getError()));
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType recoverMap(@NotNull Class<ErrorType> errorClass, @NotNull Function<ErrorType, SuccessType> mappingFunction) {
+        if (isError() && isErrorTypeOf(errorClass)) {
+            return recreateSuccess(mappingFunction.apply(errorClass.cast(getError())));
         }
         else {
             return retype();

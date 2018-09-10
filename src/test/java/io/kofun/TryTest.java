@@ -6,6 +6,7 @@ import io.kofun.prototypes.TryPrototype;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -2032,6 +2033,52 @@ public class TryTest {
     }
 
     @Test
+    public void recover_shouldReturnTheSameTryIfClassDoesNotMatch() {
+        // given:
+        RuntimeException anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.recover(IOException.class, new Object());
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void recover_shouldReturnTheSameTryIfWasSuccessAndClassProvided() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = successTry.recover(Throwable.class, alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recover_shouldReturnTheAlternativeIfErrorMatches() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recover(Throwable.class, alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
     public void recoverGet_shouldReturnTheSameTryIfWasSuccess() {
         // given:
         Object anyValue = new Object();
@@ -2073,6 +2120,116 @@ public class TryTest {
         // then:
         assertTrue(result.isSuccess());
         assertNull(result.getSuccess());
+    }
+
+    @Test
+    public void recoverGet_shouldReturnTheSameTryIfClassDoesNotMatch() {
+        // given:
+        RuntimeException anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.recoverGet(IOException.class, Object::new);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void recoverGet_shouldReturnTheSameTryIfWasSuccessAndClassProvided() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = successTry.recoverGet(Throwable.class, () -> alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverGet_shouldReturnTheAlternativeIfErrorMatches() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverGet(Throwable.class, () -> alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverMap_shouldReturnSameTryIfWasSuccess() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = successTry.recoverMap(error -> Try.success(alternativeValue));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverMap_shouldMapTheFailureIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverMap(error -> alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverMap_shouldReturnSameTryIfWasErrorButClassDoesNotMatch() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverMap(IOException.class, error -> alternativeValue);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void recoverMap_shouldReturnAlternativeIfWasErrorAndItMatchedTheClass() {
+        // given:
+        RuntimeException anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverMap(Throwable.class, error -> alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
     }
 
 }
