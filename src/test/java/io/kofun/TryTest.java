@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -1984,6 +1985,94 @@ public class TryTest {
 
         // expect:
         successTry.orElse(() -> null);
+    }
+
+    @Test
+    public void recover_shouldReturnTheSameTryIfWasSuccess() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.recover(new Object());
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recover_shouldReturnTheAlternativeIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recover(alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
+    public void recover_shouldReturnTheNullAlternativeIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.recover(null);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertNull(result.getSuccess());
+    }
+
+    @Test
+    public void recoverGet_shouldReturnTheSameTryIfWasSuccess() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.recoverGet(Object::new);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverGet_shouldReturnTheAlternativeIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternativeValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverGet(() -> alternativeValue);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternativeValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverGet_shouldReturnTheNullAlternativeIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // when:
+        Try<Object> result = errorTry.recoverGet(() -> null);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertNull(result.getSuccess());
     }
 
 }

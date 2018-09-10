@@ -505,6 +505,29 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         }
     }
 
+    @NotNull
+    @ExtensibleFluentChain
+    default NewTryType recover(SuccessType other) {
+        if (isError()) {
+            return recreateSuccess(other);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType recoverGet(@NotNull Supplier<SuccessType> otherSupplier) {
+        if (isError()) {
+            return recreateSuccess(otherSupplier.get());
+        }
+        else {
+            return retype();
+        }
+    }
+
     default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {
         return errorClass.isAssignableFrom(getError().getClass());
     }

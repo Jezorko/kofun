@@ -350,4 +350,18 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         return TryPrototype.super.orElse(otherSupplier);
     }
 
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> recover(SuccessType other) {
+        return TryPrototype.super.recover(other);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> recoverGet(@NotNull Supplier<SuccessType> otherSupplier) {
+        return TryPrototype.super.recoverGet(otherSupplier);
+    }
+
 }
