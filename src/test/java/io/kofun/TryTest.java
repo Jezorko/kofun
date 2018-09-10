@@ -1480,4 +1480,36 @@ public class TryTest {
         assertSame(result.getSuccess(), anyValue);
     }
 
+    @Test
+    public void mapTryError_shouldMapIfErrorClassMatches() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.mapTryError(Throwable.class, ignore -> newError);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), newError);
+    }
+
+    @Test
+    public void mapTryError_shouldNotMapIfErrorClassDoesNotMatch() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.mapTryError(AssertionError.class, ignore -> newError);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), givenError);
+    }
+
 }

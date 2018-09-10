@@ -80,6 +80,7 @@ public class ExtensibleFluentChainTestUtil extends StaticMethodsCollection {
 
     /**
      * A pair representing a {@link FluentPrototype} class and its' implementation class.
+     * @implNote keep public, otherwise compiler will complain about generic types
      */
     public final static class PrototypeImplementationPair {
         private final Class<? extends FluentPrototype> prototypeClass;
