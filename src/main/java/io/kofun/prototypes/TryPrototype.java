@@ -323,10 +323,6 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         });
     }
 
-    default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {
-        return errorClass.isAssignableFrom(getError().getClass());
-    }
-
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null -> fail", pure = true)
@@ -342,6 +338,28 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         else {
             return retype();
         }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <NewErrorType extends Throwable, ErrorType extends Throwable> NewTryType mapTryError(@NotNull CheckedFunction<? super Throwable, ? extends NewErrorType,
+            ErrorType> mappingFunction) {
+        if (isError()) {
+            try {
+                NewErrorType newError = mappingFunction.apply(getError());
+                return recreateError(newError);
+            } catch (Throwable error) {
+                return recreateError(error);
+            }
+        }
+        else {
+            return retype();
+        }
+    }
+
+    default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {
+        return errorClass.isAssignableFrom(getError().getClass());
     }
 
 }

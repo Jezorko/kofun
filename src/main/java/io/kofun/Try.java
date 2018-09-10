@@ -254,4 +254,12 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
             @NotNull CheckedFunction<? super SuccessType, ? extends NewSuccessType, ErrorType> mappingFunction) {
         return TryPrototype.super.mapTry(mappingFunction);
     }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <NewErrorType extends Throwable, ErrorType extends Throwable> Try<SuccessType> mapTryError(@NotNull CheckedFunction<? super Throwable, ? extends NewErrorType,
+            ErrorType> mappingFunction) {
+        return TryPrototype.super.mapTryError(mappingFunction);
+    }
 }

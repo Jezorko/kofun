@@ -1417,4 +1417,67 @@ public class TryTest {
         assertSame(result.getError(), anyError);
     }
 
+    @Test
+    public void mapTryError_shouldNotThrowIfMapperThrowsAndWasErrorBefore() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = errorTry.mapTryError(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), anyError);
+    }
+
+    @Test
+    public void mapTryError_shouldNotThrowIfMapperThrowsButWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = successTry.mapTryError(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
+    @Test
+    public void mapTryError_shouldMapToNewErrorIfWasErrorBefore() {
+        // given:
+        Throwable anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.mapTryError(ignore -> newError);
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(newError, result.getError());
+    }
+
+    @Test
+    public void mapTryError_shouldReturnItselfIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = successTry.mapTryError(ignore -> newError);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
 }
