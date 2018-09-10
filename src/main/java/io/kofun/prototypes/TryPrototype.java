@@ -327,4 +327,21 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         return errorClass.isAssignableFrom(getError().getClass());
     }
 
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <NewSuccessType, ErrorType extends Throwable> NewTryType mapTry(@NotNull CheckedFunction<? super SuccessType, ? extends NewSuccessType, ErrorType> mappingFunction) {
+        if (isSuccess()) {
+            try {
+                NewSuccessType newSuccess = mappingFunction.apply(getSuccess());
+                return recreateSuccess(newSuccess);
+            } catch (Throwable error) {
+                return recreateError(error);
+            }
+        }
+        else {
+            return retype();
+        }
+    }
+
 }
