@@ -65,6 +65,13 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         return error(error);
     }
 
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <TryType extends TryPrototype<AnySuccessType, ?>, AnySuccessType> Try<AnySuccessType> recreateOther(TryType tryPrototype) {
+        return (Try<AnySuccessType>) tryPrototype.retype();
+    }
+
     /* Reimplementing @ExtensibleFluentChain methods */
 
     @NotNull
@@ -271,4 +278,50 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
                                                                                                                ErrorType> mappingFunction) {
         return TryPrototype.super.mapTryError(errorClass, mappingFunction);
     }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <NewSuccessType> Try<NewSuccessType> flatMap(@NotNull Function<? super SuccessType, ? extends TryPrototype<NewSuccessType, ?>> mappingFunction) {
+        return TryPrototype.super.flatMap(mappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> flatMapError(@NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> mappingFunction) {
+        return TryPrototype.super.flatMapError(mappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> flatMapError(Class<? extends Throwable> errorClass, @NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> mappingFunction) {
+        return TryPrototype.super.flatMapError(errorClass, mappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <NewSuccessType, ErrorType extends Throwable> Try<NewSuccessType> flatMapTry(
+            @NotNull CheckedFunction<? super SuccessType, ? extends TryPrototype<NewSuccessType, ?>, ErrorType> mappingFunction) {
+        return TryPrototype.super.flatMapTry(mappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> flatMapTryError(
+            @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType, ?>, ErrorType> mappingFunction) {
+        return TryPrototype.super.flatMapTryError(mappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> flatMapTryError(Class<? extends Throwable> errorClass,
+                                                                           @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType, ?>, ErrorType> mappingFunction) {
+        return TryPrototype.super.flatMapTryError(errorClass, mappingFunction);
+    }
+
 }

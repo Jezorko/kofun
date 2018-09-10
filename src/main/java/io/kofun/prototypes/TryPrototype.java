@@ -10,8 +10,10 @@ import io.kofun.exception.ErrorNotPresentException;
 import io.kofun.exception.PredicateNotMatchingException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -50,6 +52,10 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     <AnySuccessType> NewTryType recreateError(Throwable error);
+
+    @NotNull
+    @ExtensibleFluentChain
+    <TryType extends TryPrototype<AnySuccessType, ?>, AnySuccessType> NewTryType recreateOther(TryType tryPrototype);
 
     @NotNull
     @Contract("_ -> this")
@@ -371,6 +377,106 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
                 return error;
             }
         });
+    }
+
+    // TODO: remove separator -----------------
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <NewSuccessType> NewTryType flatMap(@NotNull Function<? super SuccessType, ? extends TryPrototype<NewSuccessType, ?>> mappingFunction) {
+        if (isSuccess()) {
+            TryPrototype<NewSuccessType, ?> newTry = mappingFunction.apply(getSuccess());
+            Objects.requireNonNull(newTry, "Try flat mapping resulted in a null object");
+            return recreateOther(newTry);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType flatMapError(@NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> mappingFunction) {
+        if (isError()) {
+            TryPrototype<SuccessType, ?> newTry = mappingFunction.apply(getError());
+            Objects.requireNonNull(newTry, "Try flat mapping resulted in a null object");
+            return recreateOther(newTry);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail", pure = true)
+    default NewTryType flatMapError(Class<? extends Throwable> errorClass, @NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> mappingFunction) {
+        return flatMapError(error -> blaFlatMap(errorClass, mappingFunction::apply, error));
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <NewSuccessType, ErrorType extends Throwable> NewTryType flatMapTry(
+            @NotNull CheckedFunction<? super SuccessType, ? extends TryPrototype<NewSuccessType, ?>, ErrorType> mappingFunction) {
+        if (isSuccess()) {
+            TryPrototype<NewSuccessType, ?> newTry;
+            try {
+                newTry = mappingFunction.apply(getSuccess());
+            } catch (Throwable error) {
+                return recreateError(error);
+            }
+            Objects.requireNonNull(newTry, "Try flat mapping resulted in a null object");
+            return recreateOther(newTry);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType flatMapTryError(
+            @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType, ?>, ErrorType> mappingFunction) {
+        if (isError()) {
+            TryPrototype<SuccessType, ?> newTry;
+            try {
+                newTry = mappingFunction.apply(getError());
+            } catch (Throwable error) {
+                return recreateError(error);
+            }
+            Objects.requireNonNull(newTry, "Try flat mapping resulted in a null object");
+            return recreateOther(newTry);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType flatMapTryError(Class<? extends Throwable> errorClass,
+                                                                     @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType, ?>, ErrorType> mappingFunction) {
+        return flatMapTryError(error -> blaFlatMap(errorClass, mappingFunction, error));
+    }
+
+    @Nullable
+    // TODO: better name for the method & consider duplicating code
+    default <ErrorType extends Throwable> TryPrototype<SuccessType, ?> blaFlatMap(Class<? extends Throwable> errorClass,
+                                                                                  @NotNull CheckedFunction<? super Throwable, ? extends TryPrototype<SuccessType,
+                                                                                          ?>, ErrorType> mappingFunction,
+                                                                                  Throwable error) throws ErrorType {
+        if (isErrorTypeOf(errorClass)) {
+            TryPrototype<SuccessType, ?> newTry = mappingFunction.apply(error);
+            return newTry == null ? null : recreateOther(newTry);
+        }
+        else {
+            return recreateError(error);
+        }
     }
 
     default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {

@@ -667,7 +667,7 @@ public class TryTest {
         Try<Object> errorTry = Try.error(error);
 
         // then:
-        errorTry.onErrorTryRunnable(IllegalArgumentException.class, () -> fail());
+        errorTry.onErrorTryRunnable(IllegalArgumentException.class, Assert::fail);
     }
 
     @Test
@@ -705,7 +705,7 @@ public class TryTest {
         Try<Object> errorTry = Try.error(error);
 
         // then:
-        errorTry.onErrorTryRun(IllegalArgumentException.class, () -> fail());
+        errorTry.onErrorTryRun(IllegalArgumentException.class, Assert::fail);
     }
 
     @Test
@@ -1510,6 +1510,376 @@ public class TryTest {
         // then:
         assertTrue(result.isError());
         assertSame(result.getError(), givenError);
+    }
+
+    // TODO: remove separator ==================
+
+    @Test(expected = TestSuccessException.class)
+    public void flatMap_shouldThrowIfMapperThrowsAndWasSuccessBefore() {
+        // given:
+        Try<Object> successTry = Try.success(new Object());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // expect:
+        successTry.flatMap(ignore -> {throw anyError;});
+    }
+
+    @Test
+    public void flatMap_shouldNotThrowIfMapperThrowsButWasErrorBefore() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        RuntimeException thrownError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMap(ignore -> {throw thrownError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void flatMap_shouldMapToNewSuccessIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object newValue = new Object();
+
+        // when:
+        Try<Object> result = successTry.flatMap(ignore -> Try.success(newValue));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(newValue, result.getSuccess());
+    }
+
+    @Test
+    public void flatMap_shouldReturnItselfIfWasErrorBefore() {
+        // given:
+        TestSuccessException anyError = new TestSuccessException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object newValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.flatMap(ignore -> Try.success(newValue));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), anyError);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMap_shouldThrowIfMappingResultIsNull() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // expect:
+        successTry.flatMap(ignore -> null);
+    }
+
+    @Test(expected = TestSuccessException.class)
+    public void flatMapError_shouldThrowIfMapperThrowsAndWasErrorBefore() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // expect:
+        errorTry.flatMapError(ignore -> {throw anyError;});
+    }
+
+    @Test
+    public void flatMapError_shouldNotThrowIfMapperThrowsButWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = successTry.flatMapError(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
+    @Test
+    public void flatMapError_shouldMapToNewErrorIfWasErrorBefore() {
+        // given:
+        Throwable anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapError(ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(newError, result.getError());
+    }
+
+    @Test
+    public void flatMapError_shouldReturnItselfIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = successTry.flatMapError(ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
+    @Test
+    public void flatMapError_shouldMapIfErrorClassMatches() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapError(Throwable.class, ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), newError);
+    }
+
+    @Test
+    public void flatMapError_shouldNotMapIfErrorClassDoesNotMatch() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapError(AssertionError.class, ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), givenError);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMapError_shouldThrowIfMappingResultIsNull() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // expect:
+        errorTry.flatMapError(ignore -> null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMapError_shouldThrowIfErrorClassMatchesAndMappingResultIsNull() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // expect:
+        errorTry.flatMapError(Throwable.class, ignore -> null);
+    }
+
+    @Test
+    public void flatMapTry_shouldNotThrowIfMapperThrowsAndWasSuccessBefore() {
+        // given:
+        Try<Object> successTry = Try.success(new Object());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = successTry.flatMapTry(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), anyError);
+    }
+
+    @Test
+    public void flatMapTry_shouldNotThrowIfMapperThrowsButWasErrorBefore() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        RuntimeException thrownError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapTry(ignore -> {throw thrownError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void flatMapTry_shouldMapToNewSuccessIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object newValue = new Object();
+
+        // when:
+        Try<Object> result = successTry.flatMapTry(ignore -> Try.success(newValue));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(newValue, result.getSuccess());
+    }
+
+    @Test
+    public void flatMapTry_shouldReturnItselfIfWasErrorBefore() {
+        // given:
+        TestSuccessException anyError = new TestSuccessException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object newValue = new Object();
+
+        // when:
+        Try<Object> result = errorTry.flatMapTry(ignore -> Try.success(newValue));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), anyError);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMapTry_shouldThrowIfMappingResultIsNull() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // expect:
+        successTry.flatMapTry(ignore -> null);
+    }
+
+    @Test
+    public void flatMapTryError_shouldNotThrowIfMapperThrowsAndWasErrorBefore() {
+        // given:
+        Try<Object> errorTry = Try.error(new Throwable());
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapTryError(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), anyError);
+    }
+
+    @Test
+    public void flatMapTryError_shouldNotThrowIfMapperThrowsButWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        TestSuccessException anyError = new TestSuccessException();
+
+        // when:
+        Try<Object> result = successTry.flatMapTryError(ignore -> {throw anyError;});
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
+    @Test
+    public void flatMapTryError_shouldMapToNewErrorIfWasErrorBefore() {
+        // given:
+        Throwable anyError = new RuntimeException();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapTryError(ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(newError, result.getError());
+    }
+
+    @Test
+    public void flatMapTryError_shouldReturnItselfIfWasSuccessBefore() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = successTry.flatMapTryError(ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(result.getSuccess(), anyValue);
+    }
+
+    @Test
+    public void flatMapTryError_shouldMapIfErrorClassMatches() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapTryError(Throwable.class, ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), newError);
+    }
+
+    @Test
+    public void flatMapTryError_shouldNotMapIfErrorClassDoesNotMatch() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        Throwable newError = new RuntimeException();
+
+        // when:
+        Try<Object> result = errorTry.flatMapTryError(AssertionError.class, ignore -> Try.error(newError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(result.getError(), givenError);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMapTryError_shouldThrowIfMappingResultIsNull() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        // expect:
+        errorTry.flatMapTryError(ignore -> null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMapTryError_shouldThrowIfClassMatchesAndMappingResultIsNull() {
+        // given:
+        Throwable givenError = new Throwable();
+        Try<Object> errorTry = Try.error(givenError);
+
+        // expect:
+        errorTry.flatMapTryError(Throwable.class, ignore -> null);
     }
 
 }
