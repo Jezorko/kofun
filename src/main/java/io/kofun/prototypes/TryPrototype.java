@@ -6,6 +6,7 @@ import io.kofun.CheckedPredicate;
 import io.kofun.CheckedRunnable;
 import io.kofun.CheckedSupplier;
 import io.kofun.Iterators;
+import io.kofun.Try;
 import io.kofun.exception.ErrorNotPresentException;
 import io.kofun.exception.PredicateNotMatchingException;
 import org.jetbrains.annotations.Contract;
@@ -572,6 +573,32 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     default <ErrorType extends Throwable> NewTryType recoverMap(@NotNull Class<ErrorType> errorClass, @NotNull Function<ErrorType, SuccessType> mappingFunction) {
         if (isError() && isErrorTypeOf(errorClass)) {
             return recreateSuccess(mappingFunction.apply(errorClass.cast(getError())));
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType recoverFlat(@NotNull Try<SuccessType> other) {
+        if (isError()) {
+            return recreateOther(other);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType recoverFlatGet(@NotNull Supplier<Try<SuccessType>> otherSupplier) {
+        if (isError()) {
+            Try<SuccessType> result = otherSupplier.get();
+            Objects.requireNonNull(result, "Try alternative supplier result is a null object");
+            return recreateOther(result);
         }
         else {
             return retype();
