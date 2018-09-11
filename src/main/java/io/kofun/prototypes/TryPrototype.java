@@ -6,7 +6,6 @@ import io.kofun.CheckedPredicate;
 import io.kofun.CheckedRunnable;
 import io.kofun.CheckedSupplier;
 import io.kofun.Iterators;
-import io.kofun.Try;
 import io.kofun.exception.ErrorNotPresentException;
 import io.kofun.exception.PredicateNotMatchingException;
 import org.jetbrains.annotations.Contract;
@@ -582,7 +581,7 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null -> fail", pure = true)
-    default NewTryType recoverFlat(@NotNull Try<SuccessType> other) {
+    default NewTryType recoverFlat(@NotNull TryPrototype<SuccessType, ?> other) {
         if (isError()) {
             return recreateOther(other);
         }
@@ -594,10 +593,24 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
     @NotNull
     @ExtensibleFluentChain
     @Contract(value = "null -> fail", pure = true)
-    default NewTryType recoverFlatGet(@NotNull Supplier<Try<SuccessType>> otherSupplier) {
+    default NewTryType recoverFlatGet(@NotNull Supplier<? extends TryPrototype<SuccessType, ?>> otherSupplier) {
         if (isError()) {
-            Try<SuccessType> result = otherSupplier.get();
+            TryPrototype<SuccessType, ?> result = otherSupplier.get();
             Objects.requireNonNull(result, "Try alternative supplier result is a null object");
+            return recreateOther(result);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null -> fail", pure = true)
+    default NewTryType recoverFlatMap(@NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> errorMappingFunction) {
+        if (isError()) {
+            TryPrototype<SuccessType, ?> result = errorMappingFunction.apply(getError());
+            Objects.requireNonNull(result, "Try alternative error mapper result is a null object");
             return recreateOther(result);
         }
         else {

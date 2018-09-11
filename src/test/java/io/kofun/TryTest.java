@@ -2352,4 +2352,76 @@ public class TryTest {
         errorTry.recoverFlatGet(() -> null);
     }
 
+    @Test
+    public void recoverFlatMap_shouldReturnSameTryIfWasSuccess() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = successTry.recoverFlatMap(error -> Try.success(alternative));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverFlatMap_shouldReturnSameTryIfWasSuccessEvenIfSupplierReturnsNull() {
+        // given:
+        Object anyValue = new Object();
+        Try<Object> successTry = Try.success(anyValue);
+
+        // when:
+        Try<Object> result = successTry.recoverFlatMap(error -> null);
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(anyValue, result.getSuccess());
+    }
+
+    @Test
+    public void recoverFlatMap_shouldReturnAlternativeIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatMap(error -> Try.success(alternative));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternative, result.getSuccess());
+    }
+
+    @Test
+    public void recoverFlatMap_shouldReturnAlternativeErrorIfWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable alternativeError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatMap(error -> Try.error(alternativeError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(alternativeError, result.getError());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void recoverFlatMap_shouldThrowIfAlternativeSupplierReturnsNullAndWasError() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        // expect:
+        errorTry.recoverFlatMap(error -> null);
+    }
+
 }

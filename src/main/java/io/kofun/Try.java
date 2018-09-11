@@ -412,15 +412,22 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    default Try<SuccessType> recoverFlat(@NotNull Try<SuccessType> other) {
+    default Try<SuccessType> recoverFlat(@NotNull TryPrototype<SuccessType, ?> other) {
         return TryPrototype.super.recoverFlat(other);
     }
 
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    default Try<SuccessType> recoverFlatGet(@NotNull Supplier<Try<SuccessType>> otherSupplier) {
+    default Try<SuccessType> recoverFlatGet(@NotNull Supplier<? extends TryPrototype<SuccessType, ?>> otherSupplier) {
         return TryPrototype.super.recoverFlatGet(otherSupplier);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default Try<SuccessType> recoverFlatMap(@NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> errorMappingFunction) {
+        return TryPrototype.super.recoverFlatMap(errorMappingFunction);
     }
 
 }
