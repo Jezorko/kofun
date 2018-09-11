@@ -14,24 +14,58 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
 
     Try<?> EMPTY_SUCCESS = new SuccessTry<>(null);
 
+    /**
+     * A static constructor that creates a new Try from the supplied value.
+     * If the supplier throws, a new error Try containing the thrown exception is created.
+     *
+     * @param supplier      to provide the result
+     * @param <SuccessType> the type of the supplied result
+     *
+     * @return a new Try containing the supplied result or an error
+     */
     @NotNull
     @Contract(value = "null -> fail", pure = true)
     static <SuccessType> Try<SuccessType> trySupplier(@NotNull Supplier<SuccessType> supplier) {
         return tryOf(supplier::get);
     }
 
+    /**
+     * A static constructor that creates a new Try from the supplied value.
+     * If the callable throws, a new error Try containing the thrown exception is created.
+     *
+     * @param callable      to provide the result
+     * @param <SuccessType> the type of the supplied result
+     *
+     * @return a new Try containing the supplied result or an error
+     */
     @NotNull
     @Contract(value = "null -> fail", pure = true)
     static <SuccessType> Try<SuccessType> tryCallable(@NotNull Callable<SuccessType> callable) {
         return tryOf(callable::call);
     }
 
+    /**
+     * A static constructor that runs the runnable and creates a new empty Try.
+     * If the runnable throws, a new error Try containing the thrown exception is created.
+     *
+     * @param runnable to be executed
+     *
+     * @return a new empty Try
+     */
     @NotNull
     @Contract(value = "null -> fail", pure = true)
     static Try<Void> tryRunnable(@NotNull Runnable runnable) {
         return tryRun(runnable::run);
     }
 
+    /**
+     * A static constructor that runs the checked runnable and creates a new empty Try.
+     * If the runnable throws, a new error Try containing the thrown exception is created.
+     *
+     * @param runnable to be executed
+     *
+     * @return a new empty Try
+     */
     @NotNull
     @Contract(value = "null -> fail", pure = true)
     static Try<Void> tryRun(@NotNull CheckedRunnable runnable) {
@@ -41,6 +75,15 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         });
     }
 
+    /**
+     * A static constructor that creates a new Try from the supplied value.
+     * If the supplier throws, a new error Try containing the thrown exception is created.
+     *
+     * @param supplier      to provide the result
+     * @param <SuccessType> the type of the supplied result
+     *
+     * @return a new Try containing the supplied result or an error
+     */
     @NotNull
     @Contract(value = "null -> fail", pure = true)
     static <SuccessType> Try<SuccessType> tryOf(@NotNull CheckedSupplier<SuccessType, ? extends Throwable> supplier) {
@@ -51,6 +94,13 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         }
     }
 
+    /**
+     * Returns an empty Try (with null for a result).
+     *
+     * @param <SuccessType> the type of the success result
+     *
+     * @return an empty Try
+     */
     @NotNull
     @SuppressWarnings("unchecked")
     @Contract(value = "-> !null", pure = true)
@@ -58,24 +108,62 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
         return (Try<SuccessType>) EMPTY_SUCCESS;
     }
 
+    /**
+     * Creates a new success Try from given value.
+     * Note that exceptions may indicate that operation was successful,
+     * therefore they are allowed to be a value of success Try.
+     * If you would like to create a Try that indicates an error,
+     * use the {@link #error(Throwable)} method.
+     * Also note that this method may not always create a new Try instance,
+     * for example when the values (like null) are indistinguishable.
+     *
+     * @param success       the new Try value
+     * @param <SuccessType> the type of the success result
+     *
+     * @return a new success Try instance
+     */
     @NotNull
     @Contract(value = "null -> !null; !null -> new", pure = true)
     static <SuccessType> Try<SuccessType> success(SuccessType success) {
         return success == null ? emptySuccess() : new SuccessTry<>(success);
     }
 
+    /**
+     * Creates a new error Try from given value.
+     *
+     * @param error         the new Try value
+     * @param <SuccessType> the type of the success result
+     *
+     * @return a new error Try instance
+     */
     @NotNull
     @Contract(value = "null -> fail; !null -> new", pure = true)
     static <SuccessType> Try<SuccessType> error(@NotNull Throwable error) {
         return new ErrorTry<>(error);
     }
 
+    /**
+     * Creates a new {@link Supplier} that will emit success Try objects containing given value.
+     *
+     * @param success       to create new Try objects with
+     * @param <SuccessType> the type of the success result
+     *
+     * @return a supplier emitting success Try objects
+     */
     @NotNull
     static <SuccessType> Supplier<Try<SuccessType>> successes(SuccessType success) {
         Try<SuccessType> result = success(success);
         return () -> result;
     }
 
+    /**
+     * Creates a new {@link Supplier} that will emit error Try objects containing given value.
+     *
+     * @param error         to create new Try objects with
+     * @param <SuccessType> the type of the success result
+     *
+     * @return a supplier emitting error Try objects
+     */
     @NotNull
     static <SuccessType> Supplier<Try<SuccessType>> errors(Throwable error) {
         Try<SuccessType> result = error(error);
@@ -98,7 +186,8 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @Override
     @SuppressWarnings("unchecked")
     default <TryType extends TryPrototype<AnySuccessType, ?>, AnySuccessType> Try<AnySuccessType> recreateOther(TryType tryPrototype) {
-        return (Try<AnySuccessType>) tryPrototype.retype();
+        Try<AnySuccessType> retypedPrototype = (Try<AnySuccessType>) tryPrototype.retype();
+        return retypedPrototype.isSuccess() ? success(retypedPrototype.getSuccess()) : error(retypedPrototype.getError());
     }
 
     /* Reimplementing @ExtensibleFluentChain methods */
@@ -113,8 +202,8 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    default Try<SuccessType> onSuccessTryConsumer(@NotNull Consumer<SuccessType> consumer) {
-        return TryPrototype.super.onSuccessTryConsumer(consumer);
+    default Try<SuccessType> onSuccessTryConsumer(@NotNull Consumer<SuccessType> successConsumer) {
+        return TryPrototype.super.onSuccessTryConsumer(successConsumer);
     }
 
     @NotNull
@@ -134,8 +223,8 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    default Try<SuccessType> onSuccessTry(@NotNull CheckedConsumer<SuccessType, ? extends Throwable> consumer) {
-        return TryPrototype.super.onSuccessTry(consumer);
+    default Try<SuccessType> onSuccessTry(@NotNull CheckedConsumer<SuccessType, ? extends Throwable> successConsumer) {
+        return TryPrototype.super.onSuccessTry(successConsumer);
     }
 
     @NotNull
