@@ -419,6 +419,13 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> recoverFlat(@NotNull Class<ErrorType> errorClass, @NotNull TryPrototype<SuccessType, ?> other) {
+        return TryPrototype.super.recoverFlat(errorClass, other);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
     default Try<SuccessType> recoverFlatGet(@NotNull Supplier<? extends TryPrototype<SuccessType, ?>> otherSupplier) {
         return TryPrototype.super.recoverFlatGet(otherSupplier);
     }
@@ -426,8 +433,24 @@ public interface Try<SuccessType> extends TryPrototype<SuccessType, Try> {
     @NotNull
     @Override
     @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> recoverFlatGet(@NotNull Class<ErrorType> errorClass,
+                                                                          @NotNull Supplier<? extends TryPrototype<SuccessType, ?>> otherSupplier) {
+        return TryPrototype.super.recoverFlatGet(errorClass, otherSupplier);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
     default Try<SuccessType> recoverFlatMap(@NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> errorMappingFunction) {
         return TryPrototype.super.recoverFlatMap(errorMappingFunction);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Throwable> Try<SuccessType> recoverFlatMap(@NotNull Class<ErrorType> errorClass,
+                                                                          @NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> errorMappingFunction) {
+        return TryPrototype.super.recoverFlatMap(errorClass, errorMappingFunction);
     }
 
 }

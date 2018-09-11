@@ -2265,6 +2265,38 @@ public class TryTest {
     }
 
     @Test
+    public void recoverFlat_shouldReturnSameTryIfWasErrorButDidNotMatchClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlat(IOException.class, Try.success(alternative));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
+    public void recoverFlat_shouldReturnAlternativeIfWasErrorAndMatchedClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlat(Throwable.class, Try.success(alternative));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternative, result.getSuccess());
+    }
+
+    @Test
     public void recoverFlat_shouldReturnAlternativeErrorIfWasError() {
         // given:
         Throwable anyError = new Throwable();
@@ -2274,6 +2306,22 @@ public class TryTest {
 
         // when:
         Try<Object> result = errorTry.recoverFlat(Try.error(alternativeError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(alternativeError, result.getError());
+    }
+
+    @Test
+    public void recoverFlat_shouldReturnAlternativeErrorIfWasErrorAndMatchedClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable alternativeError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlat(Throwable.class, Try.error(alternativeError));
 
         // then:
         assertTrue(result.isError());
@@ -2311,6 +2359,22 @@ public class TryTest {
     }
 
     @Test
+    public void recoverFlatGet_shouldReturnSameTryIfWasErrorButDidNotMatchClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatGet(IOException.class, Try.successes(alternative));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
     public void recoverFlatGet_shouldReturnAlternativeIfWasError() {
         // given:
         Throwable anyError = new Throwable();
@@ -2327,6 +2391,22 @@ public class TryTest {
     }
 
     @Test
+    public void recoverFlatGet_shouldReturnAlternativeIfWasErrorAndMatchedClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatGet(Throwable.class, Try.successes(alternative));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternative, result.getSuccess());
+    }
+
+    @Test
     public void recoverFlatGet_shouldReturnAlternativeErrorIfWasError() {
         // given:
         Throwable anyError = new Throwable();
@@ -2336,6 +2416,22 @@ public class TryTest {
 
         // when:
         Try<Object> result = errorTry.recoverFlatGet(Try.errors(alternativeError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(alternativeError, result.getError());
+    }
+
+    @Test
+    public void recoverFlatGet_shouldReturnAlternativeErrorIfWasErrorAndMatchedClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable alternativeError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatGet(Throwable.class, Try.errors(alternativeError));
 
         // then:
         assertTrue(result.isError());
@@ -2369,6 +2465,22 @@ public class TryTest {
     }
 
     @Test
+    public void recoverFlatMap_shouldReturnSameTryIfWasErrorButDidNotMatchClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatMap(IOException.class, error -> Try.success(alternative));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(anyError, result.getError());
+    }
+
+    @Test
     public void recoverFlatMap_shouldReturnSameTryIfWasSuccessEvenIfSupplierReturnsNull() {
         // given:
         Object anyValue = new Object();
@@ -2399,6 +2511,22 @@ public class TryTest {
     }
 
     @Test
+    public void recoverFlatMap_shouldReturnAlternativeIfWasErrorAndMatchedClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Object alternative = new Object();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatMap(Throwable.class, error -> Try.success(alternative));
+
+        // then:
+        assertTrue(result.isSuccess());
+        assertSame(alternative, result.getSuccess());
+    }
+
+    @Test
     public void recoverFlatMap_shouldReturnAlternativeErrorIfWasError() {
         // given:
         Throwable anyError = new Throwable();
@@ -2408,6 +2536,22 @@ public class TryTest {
 
         // when:
         Try<Object> result = errorTry.recoverFlatMap(error -> Try.error(alternativeError));
+
+        // then:
+        assertTrue(result.isError());
+        assertSame(alternativeError, result.getError());
+    }
+
+    @Test
+    public void recoverFlatMap_shouldReturnAlternativeErrorIfWasErrorAndMatchedClass() {
+        // given:
+        Throwable anyError = new Throwable();
+        Try<Object> errorTry = Try.error(anyError);
+
+        Throwable alternativeError = new Throwable();
+
+        // when:
+        Try<Object> result = errorTry.recoverFlatMap(Throwable.class, error -> Try.error(alternativeError));
 
         // then:
         assertTrue(result.isError());

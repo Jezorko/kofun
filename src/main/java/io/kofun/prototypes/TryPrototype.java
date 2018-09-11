@@ -592,9 +592,35 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
 
     @NotNull
     @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType recoverFlat(@NotNull Class<ErrorType> errorClass, @NotNull TryPrototype<SuccessType, ?> other) {
+        if (isError() && isErrorTypeOf(errorClass)) {
+            return recreateOther(other);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
     @Contract(value = "null -> fail", pure = true)
     default NewTryType recoverFlatGet(@NotNull Supplier<? extends TryPrototype<SuccessType, ?>> otherSupplier) {
         if (isError()) {
+            TryPrototype<SuccessType, ?> result = otherSupplier.get();
+            Objects.requireNonNull(result, "Try alternative supplier result is a null object");
+            return recreateOther(result);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType recoverFlatGet(@NotNull Class<ErrorType> errorClass, @NotNull Supplier<? extends TryPrototype<SuccessType, ?>> otherSupplier) {
+        if (isError() && isErrorTypeOf(errorClass)) {
             TryPrototype<SuccessType, ?> result = otherSupplier.get();
             Objects.requireNonNull(result, "Try alternative supplier result is a null object");
             return recreateOther(result);
@@ -618,8 +644,24 @@ public interface TryPrototype<SuccessType, NewTryType extends TryPrototype> exte
         }
     }
 
-    default boolean isErrorTypeOf(Class<? extends Throwable> errorClass) {
-        return errorClass.isAssignableFrom(getError().getClass());
+    @NotNull
+    @ExtensibleFluentChain
+    @Contract(value = "null, null -> fail; _, null -> fail; null, _ -> fail", pure = true)
+    default <ErrorType extends Throwable> NewTryType recoverFlatMap(@NotNull Class<ErrorType> errorClass,
+                                                                    @NotNull Function<? super Throwable, ? extends TryPrototype<SuccessType, ?>> errorMappingFunction) {
+        if (isError() && isErrorTypeOf(errorClass)) {
+            TryPrototype<SuccessType, ?> result = errorMappingFunction.apply(getError());
+            Objects.requireNonNull(result, "Try alternative error mapper result is a null object");
+            return recreateOther(result);
+        }
+        else {
+            return retype();
+        }
+    }
+
+    default boolean isErrorTypeOf(@NotNull Class<? extends Throwable> errorClass) {
+        Class<? extends Throwable> tryErrorClass = getError().getClass();
+        return errorClass.equals(tryErrorClass) || errorClass.isAssignableFrom(tryErrorClass);
     }
 
 }
