@@ -1,6 +1,7 @@
 package io.kofun;
 
 import io.kofun.prototypes.OptionalPrototype;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.*;
@@ -82,6 +83,7 @@ public interface Optional<ValueType> extends OptionalPrototype<ValueType, Option
 
     @NotNull
     @Override
+    @Contract(value = "_ -> this", pure = true)
     @SuppressWarnings("unchecked")
     default Optional<ValueType> onPresent(@NotNull Consumer<? super ValueType> optionalValueConsumer) {
         return OptionalPrototype.super.onPresent(optionalValueConsumer);
@@ -89,6 +91,7 @@ public interface Optional<ValueType> extends OptionalPrototype<ValueType, Option
 
     @NotNull
     @Override
+    @Contract(value = "_ -> this", pure = true)
     @SuppressWarnings("unchecked")
     default Optional<ValueType> onEmpty(@NotNull Runnable onEmptyAction) {
         return OptionalPrototype.super.onEmpty(onEmptyAction);

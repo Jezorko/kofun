@@ -1,10 +1,10 @@
 package io.kofun.prototypes;
 
+import io.kofun.Iterators;
 import io.kofun.Optional;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.*;
@@ -88,6 +88,7 @@ public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPr
      * @return the same instance of the {@link OptionalPrototype} object with type specified by the generic argument
      */
     @NotNull
+    @Contract(value = "_ -> this", pure = true)
     @ExtensibleFluentChain
     default NewOptionalType onPresent(@NotNull Consumer<? super ValueType> optionalValueConsumer) {
         if (isPresent()) {
@@ -104,6 +105,7 @@ public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPr
      * @return the same instance of the {@link OptionalPrototype} object with type specified by the generic argument
      */
     @NotNull
+    @Contract(value = "_ -> this", pure = true)
     @ExtensibleFluentChain
     default NewOptionalType onEmpty(@NotNull Runnable onEmptyAction) {
         if (!isPresent()) {
@@ -558,10 +560,7 @@ public interface OptionalPrototype<ValueType, NewOptionalType extends OptionalPr
     @NotNull
     @Override
     default Iterator<ValueType> iterator() {
-        return isPresent() ?
-               Collections.singleton(get())
-                          .iterator() :
-               Collections.emptyIterator();
+        return isPresent() ? Iterators.singleton(get()) : Iterators.emptyIterator();
     }
 
 }
